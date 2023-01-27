@@ -1,0 +1,9 @@
+
+name: ${project.name}
+version: ${project.version}
+main: net.blackofworld.sneakybastard.Start
+load: STARTUP
+author: BlackOfWorld <3
+description: SneakyBastard, a good angel.
+api-version: 1.17
+website: https://blackofworld.fun
