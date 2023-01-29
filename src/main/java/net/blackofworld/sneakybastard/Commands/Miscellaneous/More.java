@@ -3,6 +3,7 @@ package net.blackofworld.sneakybastard.Commands.Miscellaneous;
 import net.blackofworld.sneakybastard.Command.CommandBase;
 import net.blackofworld.sneakybastard.Command.CommandCategory;
 import net.blackofworld.sneakybastard.Command.CommandInfo;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,5 +16,6 @@ public class More extends CommandBase {
         final ItemStack stack = p.getInventory().getItemInMainHand();
         stack.setAmount(127);
         p.updateInventory();
+        p.Reply(ChatColor.GREEN + "You now have 127 "+stack.getType().getKey().getKey());
     }
 }

@@ -39,36 +39,37 @@ public abstract class TinyProtocol {
     private static Field getNetworkMarkers = null;
     private static Field getChannels;
 
-    protected volatile boolean closed;
-    protected Plugin plugin;
+    static {
+        var fields = ServerConnectionListener.class.getDeclaredFields();
+        for (var field : fields) {
+            var mod = field.getModifiers();
+            if (Modifier.isFinal(mod) && Modifier.isPrivate(mod) && field.getType().equals(List.class)) {
+                getChannels = field;
+                Reflection.setAccessible(getChannels, true);
+            } else if (getChannels != null && Modifier.isFinal(mod) && field.getType().equals(List.class)) {
+                getNetworkMarkers = field;
+                Reflection.setAccessible(getNetworkMarkers, true);
+                break;
+            }
+        }
+    }
+
     // Speedup channel lookup
     private final Map<String, Channel> channelLookup = new MapMaker().weakValues().makeMap();
-    private Listener listener;
     // Channels that have already been removed
     private final Set<Channel> uninjectedChannels = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
-    // List of network markers
-    private List<Object> networkManagers = Lists.newArrayList();
     // Injected channel handlers
     private final List<Channel> serverChannels = Lists.newArrayList();
+    // Current handler name
+    private final String handlerName;
+    protected volatile boolean closed;
+    protected Plugin plugin;
+    private Listener listener;
+    // List of network markers
+    private List<Object> networkManagers = Lists.newArrayList();
     private ChannelInboundHandlerAdapter serverChannelHandler;
     private ChannelInitializer<Channel> beginInitProtocol;
     private ChannelInitializer<Channel> endInitProtocol;
-    // Current handler name
-    private final String handlerName;
-    static {
-       var fields = ServerConnectionListener.class.getDeclaredFields();
-       for(var field : fields) {
-           var mod = field.getModifiers();
-           if(Modifier.isFinal(mod) && Modifier.isPrivate(mod) && field.getType().equals(List.class)) {
-               getChannels = field;
-               Reflection.setAccessible(getChannels, true);
-           } else if(getChannels != null && Modifier.isFinal(mod) && field.getType().equals(List.class)) {
-               getNetworkMarkers = field;
-               Reflection.setAccessible(getNetworkMarkers, true);
-               break;
-           }
-       }
-    }
 
     /**
      * Construct a new instance of TinyProtocol, and start intercepting packets for all connected clients and future clients.
@@ -114,7 +115,7 @@ public abstract class TinyProtocol {
         endInitProtocol = new ChannelInitializer<>() {
 
             @Override
-            protected void initChannel(Channel channel){
+            protected void initChannel(Channel channel) {
                 try {
                     // This can take a while, so we need to stop the main thread from interfering
                     synchronized (networkManagers) {
@@ -351,16 +352,17 @@ public abstract class TinyProtocol {
      */
     private PacketInterceptor injectChannelInternal(Channel channel) {
         try {
-            PacketInterceptor interceptor = (PacketInterceptor) channel.pipeline().get(handlerName);
+            ChannelHandler interceptor = channel.pipeline().get(handlerName);
 
             // Inject our packet interceptor
-            if (interceptor == null) {
-                interceptor = new PacketInterceptor();
-                channel.pipeline().addBefore("packet_handler", handlerName, interceptor);
-                uninjectedChannels.remove(channel);
+            if (interceptor != null && interceptor instanceof PacketInterceptor inter) {
+                return inter;
             }
+            interceptor = new PacketInterceptor();
+            channel.pipeline().addBefore("packet_handler", handlerName, interceptor);
+            uninjectedChannels.remove(channel);
 
-            return interceptor;
+            return (PacketInterceptor)interceptor;
         } catch (IllegalArgumentException e) {
             // Try again
             return (PacketInterceptor) channel.pipeline().get(handlerName);
@@ -491,7 +493,7 @@ public abstract class TinyProtocol {
 
         private void handleLoginStart(Channel channel, Object packet) {
             if (packet instanceof ClientboundGameProfilePacket) {
-                GameProfile profile = ((ClientboundGameProfilePacket)packet).getGameProfile();
+                GameProfile profile = ((ClientboundGameProfilePacket) packet).getGameProfile();
                 channelLookup.put(profile.getName(), channel);
             }
         }

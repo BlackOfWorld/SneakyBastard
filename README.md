@@ -1,4 +1,3 @@
-
 <div align="center">
   <a href="https://github.com/BlackOfWorld/SneakyBastard">
     <img src="assets/logo.png" alt="Logo" width="480" height="480">

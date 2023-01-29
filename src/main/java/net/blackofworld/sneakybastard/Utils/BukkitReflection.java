@@ -1,9 +1,11 @@
 package net.blackofworld.sneakybastard.Utils;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.dedicated.DedicatedServerProperties;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -61,6 +63,18 @@ public class BukkitReflection {
     public static DedicatedServer getMinecraftServer() {
         var m = Reflection.getMethodCached("{obc}.CraftServer", "getServer");
         return invoke(m, Bukkit.getServer());
+    }
+    public static ItemStack getItemStack(org.bukkit.inventory.ItemStack i) {
+        var m = Reflection.getMethodCached("{obc}.CraftItemStack", "getHandle");
+        return invoke(m, i);
+    }
+    public static String getItemNbt(org.bukkit.inventory.ItemStack i) {
+        var m = Reflection.getMethodCached("{obc}.inventory.CraftItemStack", "asNMSCopy", org.bukkit.inventory.ItemStack.class);
+        ItemStack is = invoke(m, null, i);
+        CompoundTag compound = new CompoundTag();
+        is.save(compound);
+        return compound.getAsString();
+
     }
     public static ServerLevel getWorldLevel(World w) {
         var m = Reflection.getMethodCached("{obc}.CraftWorld", "getHandle");

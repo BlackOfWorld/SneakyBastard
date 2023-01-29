@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * A simple packet injector, to modify the packets sent and received
  */
@@ -16,8 +17,9 @@ public class PacketInjector extends ChannelDuplexHandler {
     // There are a lot more reads than writes, so performance should be okay
     private static final List<PacketListener> packetListeners = new CopyOnWriteArrayList<>();
     public static TinyProtocol tinyProtocol = null;
+
     public PacketInjector() {
-         tinyProtocol = new TinyProtocol(Start.Instance) {
+        tinyProtocol = new TinyProtocol(Start.Instance) {
             @Override
             public Object onPacketOutAsync(Player receiver, Channel channel, Object packet) {
                 PacketEvent event = new PacketEvent(

@@ -103,8 +103,9 @@ public class Nazis extends CommandBase {
             givePlayerBanners(pe);
         });
     }
+
     public void onBlockPlace(BlockPlaceEvent e) {
-        if(!on) return;
+        if (!on) return;
         e.getItemInHand().setAmount(16);
     }
 
@@ -117,6 +118,7 @@ public class Nazis extends CommandBase {
         if (!on) return;
         e.setCancelled(true);
     }
+
     public void onPlayerDropItemEvent(PlayerDropItemEvent e) {
         if (!on) return;
         e.setCancelled(true);

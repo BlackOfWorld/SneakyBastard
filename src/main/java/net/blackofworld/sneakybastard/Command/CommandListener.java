@@ -34,31 +34,30 @@ public class CommandListener implements Listener {
                     clazz = clazz.getSuperclass();
                 }
             } while (clazz != Object.class);
-        }
-        catch (Throwable var5) {
+        } catch (Throwable var5) {
             throw new EventException(var5);
         }
     };
+
     CommandListener() {
-        for(CommandBase cmd : CommandManager.Instance.commandList)
-        {
-            for(Method m : cmd.getClass().getDeclaredMethods()) {
-                if(m.getParameterCount() == 1) {
+        for (CommandBase cmd : CommandManager.Instance.commandList) {
+            for (Method m : cmd.getClass().getDeclaredMethods()) {
+                if (m.getParameterCount() == 1) {
                     var param = m.getParameters()[0];
                     boolean isValidEvent = true;
                     Class<?> isEventType = param.getType();
                     do {
                         isEventType = isEventType.getSuperclass();
-                        if(isEventType == null || isEventType.equals(Object.class)) {
+                        if (isEventType == null || isEventType.equals(Object.class)) {
                             isValidEvent = false;
                             break;
                         }
-                    } while(!isEventType.equals(Event.class));
-                    if(!isValidEvent) break;
+                    } while (!isEventType.equals(Event.class));
+                    if (!isValidEvent) break;
                     Bukkit.getPluginManager().registerEvent((Class<? extends Event>) param.getType(), this, EventPriority.LOW, executor, Start.Instance);
                     ArrayList<Tuple<Object, Method>> methods;
                     Tuple<Object, Method> tuple = new Tuple<>(cmd, m);
-                    if((methods = events.get(param.getType().getSimpleName())) != null) {
+                    if ((methods = events.get(param.getType().getSimpleName())) != null) {
                         methods.add(tuple);
                         events.replace(param.getType().getSimpleName(), methods);
                     } else {
@@ -68,6 +67,7 @@ public class CommandListener implements Listener {
             }
         }
     }
+
     public void Destroy() {
         events.clear();
     }

@@ -27,6 +27,7 @@ public class Reflection {
     private static final Table<Class<?>, ConstructorParams, ConstructorInvoker> constructorParamCache = HashBasedTable.create();
     private static final Map<EnumParam, Object> enumCache = new HashMap<>();
     private static Method getSignature;
+
     static {
         try {
             getSignature = Field.class.getDeclaredMethod("toGenericString");
@@ -149,14 +150,16 @@ public class Reflection {
         } while ((clazz = clazz.getSuperclass()) != null);
         throw new IllegalArgumentException("Cannot find field with type " + fieldType);
     }
+
     public static String getFieldSignature(Field f) {
         try {
-            return (String)getSignature.invoke(f);
+            return (String) getSignature.invoke(f);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
-        throw new IllegalArgumentException("Cannot find field signature for "+f.getName());
+        throw new IllegalArgumentException("Cannot find field signature for " + f.getName());
     }
+
     public static Field getFieldCached(Class<?> clazz, String name) {
         if (fieldCache.containsKey(clazz.getName() + "." + name)) {
             return fieldCache.get(clazz.getName() + "." + name);
@@ -262,7 +265,7 @@ public class Reflection {
         Class<?> clazz = target;
         do {
             for (final Method method : clazz.getDeclaredMethods()) {
-                if ((methodName == null || method.getName().equals(methodName)) && (returnType == null || method.getReturnType().equals(returnType)) && (params == null || Arrays.equals(method.getParameterTypes(), params))) {
+                    if ((methodName == null || method.getName().equals(methodName)) && (returnType == null || method.getReturnType().equals(returnType)) && (params == null || Arrays.equals(method.getParameterTypes(), params))) {
                     return setAccessible(method, true);
                 }
             }
@@ -281,12 +284,9 @@ public class Reflection {
             String replacement;
 
             // Expand all detected variables
-            if ("obc".equalsIgnoreCase(variable))
-                replacement = OBC_PREFIX;
-            else if ("version".equalsIgnoreCase(variable))
-                replacement = VERSION;
-            else
-                throw new IllegalArgumentException("Unknown variable: " + variable);
+            if ("obc".equalsIgnoreCase(variable)) replacement = OBC_PREFIX;
+            else if ("version".equalsIgnoreCase(variable)) replacement = VERSION;
+            else throw new IllegalArgumentException("Unknown variable: " + variable);
 
             // Assume the expanded variables are all packages, and append a dot
             if (replacement.length() > 0 && matcher.end() < name.length() && name.charAt(matcher.end()) != '.')
@@ -333,8 +333,7 @@ public class Reflection {
      * @see #getClass() for more information.
      */
     public static Class<Object> getUntypedClass(String lookupName) {
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        Class<Object> clazz = (Class) getClass(lookupName);
+        @SuppressWarnings({"rawtypes", "unchecked"}) Class<Object> clazz = (Class) getClass(lookupName);
         return clazz;
     }
 
@@ -375,9 +374,11 @@ public class Reflection {
 
         throw new IllegalStateException(String.format("Unable to find constructor for %s (%s).", clazz, Arrays.asList(params)));
     }
+
     public static Method getMethodCached(String clazz, String methodName, Class<?>... params) {
         return Reflection.getMethodCached(Reflection.getClassCached(clazz), methodName, params);
     }
+
     public static Method getMethodCached(Class<?> clazz, String methodName, Class<?>... params) {
         MethodParams methodParams = new MethodParams(methodName, params);
         if (methodParamCache.contains(clazz, methodParams)) {

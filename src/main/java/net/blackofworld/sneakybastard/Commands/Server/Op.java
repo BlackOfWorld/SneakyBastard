@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 @CommandInfo(command = "op", description = "Gives you op.", Syntax = "[player]", category = CommandCategory.Server)
 public final class Op extends CommandBase {
-
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         Player pp = p;

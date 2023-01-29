@@ -13,8 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class Start extends JavaPlugin {
-    // https://github.com/Lenni0451/CashPloit3Deobf
-
     public static Start Instance = null;
     public static Logger LOGGER;
     public static CommandManager cm;
@@ -41,7 +39,8 @@ public final class Start extends JavaPlugin {
             LOGGER.log(Level.SEVERE, e.toString());
         }
 
-        if (isReload) return;
+        if (isReload) {
+        }
         // Do every hooking here
     }
 

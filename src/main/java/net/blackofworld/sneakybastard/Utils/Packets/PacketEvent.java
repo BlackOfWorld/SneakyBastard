@@ -2,6 +2,7 @@ package net.blackofworld.sneakybastard.Utils.Packets;
 
 import net.minecraft.network.protocol.Packet;
 import org.bukkit.entity.Player;
+
 /**
  * A packet event
  */

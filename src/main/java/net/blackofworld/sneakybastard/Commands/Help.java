@@ -13,7 +13,6 @@ public class Help extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         if(args.isEmpty()) {return;}
-
         String commandToSearch = args[0];
         if(commandToSearch.startsWith("-")) commandToSearch = commandToSearch.substring(1);
         CommandBase cmd = null;
