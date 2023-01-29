@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 @Extension
 public class PlayerExt {
@@ -28,10 +29,11 @@ public class PlayerExt {
             }
         }
         p.Reply(optional);
-        HelpCmd.get().Execute(p, new ArrayList<>(Collections.singletonList(cmd.Command)));
+        Objects.requireNonNull(HelpCmd.get()).Execute(p, new ArrayList<>(Collections.singletonList(cmd.Command)));
     }
+
     public static void sendHelp(@This @NotNull Player p, @NotNull CommandBase cmd) {
-        sendHelp(p, cmd, null);
+        sendHelp(p, cmd, (String) null);
     }
 
     public static void Reply(@This @NotNull Player player, @NotNull String... message) {
@@ -40,7 +42,7 @@ public class PlayerExt {
         }
     }
 
-    public static void SendPacket(@This @NotNull Player player, @NotNull Packet packet) {
+    public static void SendPacket(@This @NotNull Player player, @NotNull Packet<?> packet) {
         BukkitReflection.getServerPlayer(player).connection.send(packet);
     }
 }

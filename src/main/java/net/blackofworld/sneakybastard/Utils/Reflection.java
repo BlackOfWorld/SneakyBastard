@@ -73,11 +73,10 @@ public class Reflection {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static <T extends AccessibleObject> T setAccessible(T object, boolean access) {
-        AccessController.doPrivileged((PrivilegedAction) () -> {
+        AccessController.doPrivileged((PrivilegedAction<T>) () -> {
             object.setAccessible(access);
-            return null;
+            return object;
         });
         return object;
     }
@@ -190,6 +189,7 @@ public class Reflection {
         return !f.get(classInstance).equals(origVal);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean setFinalStatic(Object classInstance, String fieldName, Object newValue) throws Exception {
         Class<?> clazz = classInstance.getClass();
         do {
@@ -265,7 +265,7 @@ public class Reflection {
         Class<?> clazz = target;
         do {
             for (final Method method : clazz.getDeclaredMethods()) {
-                    if ((methodName == null || method.getName().equals(methodName)) && (returnType == null || method.getReturnType().equals(returnType)) && (params == null || Arrays.equals(method.getParameterTypes(), params))) {
+                if ((methodName == null || method.getName().equals(methodName)) && (returnType == null || method.getReturnType().equals(returnType)) && (params == null || Arrays.equals(method.getParameterTypes(), params))) {
                     return setAccessible(method, true);
                 }
             }
@@ -437,14 +437,7 @@ public class Reflection {
         Object invoke(Object... arguments);
     }
 
-    private static class MethodParams {
-        private final String name;
-        private final Class<?>[] params;
-
-        MethodParams(final String name, final Class<?>[] params) {
-            this.name = name;
-            this.params = params;
-        }
+    private record MethodParams(String name, Class<?>[] params) {
 
         // Ugly autogenned Lombok code
         @Override
@@ -480,12 +473,7 @@ public class Reflection {
     }
 
     // Necessary for deepequals
-    private static class ConstructorParams {
-        private final Class<?>[] params;
-
-        ConstructorParams(Class<?>[] params) {
-            this.params = params;
-        }
+    private record ConstructorParams(Class<?>[] params) {
 
         @Override
         public boolean equals(Object o) {
@@ -503,14 +491,7 @@ public class Reflection {
         }
     }
 
-    private static class EnumParam {
-        private final Class<?> clazz;
-        private final String enumVal;
-
-        EnumParam(Class<?> clazz, String enumVal) {
-            this.clazz = clazz;
-            this.enumVal = enumVal;
-        }
+    private record EnumParam(Class<?> clazz, String enumVal) {
 
         @Override
         public boolean equals(Object o) {

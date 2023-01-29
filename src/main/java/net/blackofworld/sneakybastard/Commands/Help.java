@@ -12,20 +12,22 @@ import java.util.ArrayList;
 public class Help extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
-        if(args.isEmpty()) {return;}
+        if (args.isEmpty()) {
+            return;
+        }
         String commandToSearch = args[0];
-        if(commandToSearch.startsWith("-")) commandToSearch = commandToSearch.substring(1);
+        if (commandToSearch.startsWith("-")) commandToSearch = commandToSearch.substring(1);
         CommandBase cmd = null;
-        for(var c : CommandManager.Instance.commandList) {
-            if(!c.Command.equalsIgnoreCase(commandToSearch)) continue;
+        for (var c : CommandManager.Instance.commandList) {
+            if (!c.Command.equalsIgnoreCase(commandToSearch)) continue;
             cmd = c;
         }
-        if(cmd == null) {
+        if (cmd == null) {
             p.Reply("Command not found!");
             return;
         }
-        p.Reply("Category: "+cmd.Category.name(),
-                "Description: "+cmd.Description,
+        p.Reply("Category: " + cmd.Category.name(),
+                "Description: " + cmd.Description,
                 "Syntax: " + cmd.Syntax);
     }
 }

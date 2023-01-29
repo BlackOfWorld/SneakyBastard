@@ -9,6 +9,7 @@ public @interface CommandInfo {
     String command();
 
     String description() default "";
+
     String Syntax();
 
     CommandCategory category();

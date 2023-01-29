@@ -4,3 +4,5 @@
 /libraries/
 /cache/
 .vscode/
+
+dependency-reduced-pom.xml

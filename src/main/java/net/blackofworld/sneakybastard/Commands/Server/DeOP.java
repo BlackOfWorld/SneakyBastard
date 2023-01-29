@@ -13,10 +13,14 @@ public final class DeOP extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         Player pp = p;
-        if(args.size() > 0) { pp = Bukkit.getPlayerExact(args[0]);}
+        if (args.size() > 0) {
+            pp = Bukkit.getPlayerExact(args[0]);
+        }
+        assert pp != null;
         pp.setOp(false);
-        if(args.size() > 0) { p.Reply(pp.getName() + " is no longer an operator");}
-        else p.Reply("You are no longer an operator");
+        if (args.size() > 0) {
+            p.Reply(pp.getName() + " is no longer an operator");
+        } else p.Reply("You are no longer an operator");
 
     }
 }

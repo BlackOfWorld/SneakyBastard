@@ -1,6 +1,11 @@
 package net.blackofworld.sneakybastard.Command;
 
 import net.blackofworld.sneakybastard.Start;
+import net.blackofworld.sneakybastard.Utils.Packets.PacketInject.PacketEvent;
+import net.blackofworld.sneakybastard.Utils.Packets.IPacket;
+import net.blackofworld.sneakybastard.Utils.Packets.PacketInject.PacketListener;
+import net.blackofworld.sneakybastard.Utils.Packets.PacketType;
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.util.Tuple;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
@@ -15,9 +20,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class CommandListener implements Listener {
-    HashMap<String, ArrayList<Tuple<Object, Method>>> events = new HashMap<>();
-    EventExecutor executor = (listener, event) -> {
+import static net.blackofworld.sneakybastard.Start.DEBUG_PACKETS;
+
+public class CommandListener implements PacketListener, Listener {
+    final HashMap<String, ArrayList<Tuple<Object, Method>>> events = new HashMap<>();
+    final EventExecutor executor = (listener, event) -> {
         try {
             Class<?> clazz = event.getClass();
             do {
@@ -39,6 +46,7 @@ public class CommandListener implements Listener {
         }
     };
 
+    @SuppressWarnings("unchecked")
     CommandListener() {
         for (CommandBase cmd : CommandManager.Instance.commandList) {
             for (Method m : cmd.getClass().getDeclaredMethods()) {
@@ -66,6 +74,21 @@ public class CommandListener implements Listener {
                 }
             }
         }
+    }
+
+    @IPacket(direction = PacketType.INCOMING)
+    public void onIncomingPacket(PacketEvent event) {
+        if (DEBUG_PACKETS) return;
+        var packet = event.packet;
+        Bukkit.getScheduler().runTask(Start.Instance, () -> Bukkit.broadcastMessage(packet.toString()));
+    }
+
+    @IPacket(direction = PacketType.OUTGOING)
+    public void onOutboundPacket(PacketEvent event) {
+        if (DEBUG_PACKETS) return;
+        var packet = event.packet;
+        if (packet.getClass().equals(ClientboundSystemChatPacket.class)) return;
+        Bukkit.getScheduler().runTask(Start.Instance, () -> Bukkit.broadcastMessage(packet.toString()));
     }
 
     public void Destroy() {

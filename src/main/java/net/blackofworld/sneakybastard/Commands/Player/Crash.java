@@ -10,17 +10,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
+
 @CommandInfo(command = "crash", description = "Crashes the player", Syntax = "<player>", category = CommandCategory.Player, requiredArgs = 1)
 public class Crash extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         Player pp = Bukkit.getPlayerExact(args[0]);
-        if(pp == null) {
+        if (pp == null) {
             p.sendHelp(this, ChatColor.RED + "No player with such name!");
             return;
         }
-        ClientboundExplodePacket packet = new ClientboundExplodePacket(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Collections.EMPTY_LIST, new Vec3(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
+        ClientboundExplodePacket packet = new ClientboundExplodePacket(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, List.of(), new Vec3(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
         pp.SendPacket(packet);
     }
 }
