@@ -1,8 +1,8 @@
 package net.blackofworld.sneakybastard.Command;
 
 import net.blackofworld.sneakybastard.Start;
-import net.blackofworld.sneakybastard.Utils.Packets.PacketInject.PacketEvent;
 import net.blackofworld.sneakybastard.Utils.Packets.IPacket;
+import net.blackofworld.sneakybastard.Utils.Packets.PacketInject.PacketEvent;
 import net.blackofworld.sneakybastard.Utils.Packets.PacketInject.PacketListener;
 import net.blackofworld.sneakybastard.Utils.Packets.PacketType;
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;

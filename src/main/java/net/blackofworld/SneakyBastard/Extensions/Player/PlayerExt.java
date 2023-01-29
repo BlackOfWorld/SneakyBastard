@@ -1,7 +1,5 @@
 package SneakyBastard.extensions.org.bukkit.entity.Player;
 
-import manifold.ext.rt.api.Extension;
-import manifold.ext.rt.api.This;
 import net.blackofworld.sneakybastard.Command.CommandBase;
 import net.blackofworld.sneakybastard.Command.CommandManager;
 import net.blackofworld.sneakybastard.Commands.Help;
@@ -15,11 +13,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
-@Extension
-public class PlayerExt {
+public final class PlayerExt {
     private static WeakReference<CommandBase> HelpCmd = null;
 
-    public static void sendHelp(@This @NotNull Player p, @NotNull CommandBase cmd, String... optional) {
+    public static void sendHelp(final @NotNull Player p, @NotNull CommandBase cmd, String... optional) {
         if (HelpCmd == null) {
             for (var help : CommandManager.Instance.commandList) {
                 if (help.getClass().equals(Help.class)) {
@@ -28,21 +25,21 @@ public class PlayerExt {
                 }
             }
         }
-        p.Reply(optional);
+        PlayerExt.Reply(p, optional);
         Objects.requireNonNull(HelpCmd.get()).Execute(p, new ArrayList<>(Collections.singletonList(cmd.Command)));
     }
 
-    public static void sendHelp(@This @NotNull Player p, @NotNull CommandBase cmd) {
+    public static void sendHelp(final @NotNull Player p, @NotNull CommandBase cmd) {
         sendHelp(p, cmd, (String) null);
     }
 
-    public static void Reply(@This @NotNull Player player, @NotNull String... message) {
+    public static void Reply(final @NotNull Player player, @NotNull String... message) {
         for (var msg : message) {
             player.sendMessage(CommandManager.COMMAND_PREFIX + msg.replaceAll("\n", "\n" + CommandManager.COMMAND_PREFIX));
         }
     }
 
-    public static void SendPacket(@This @NotNull Player player, @NotNull Packet<?> packet) {
+    public static void SendPacket(final @NotNull Player player, @NotNull Packet<?> packet) {
         BukkitReflection.getServerPlayer(player).connection.send(packet);
     }
 }

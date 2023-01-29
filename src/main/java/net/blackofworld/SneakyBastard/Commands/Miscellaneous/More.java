@@ -18,7 +18,7 @@ public class More extends CommandBase {
         stack.setAmount(127);
         p.updateInventory();
         final String name = Pattern.compile("\\b(.)(.*?)\\b")
-                .matcher(stack.getType().getKey().getKey())
+                .matcher(stack.getType().getKey().getKey().replaceAll("_", " "))
                 .replaceAll(match -> match.group(1).toUpperCase() + match.group(2));
         p.Reply(ChatColor.GREEN + "You now have 127 " + name);
     }

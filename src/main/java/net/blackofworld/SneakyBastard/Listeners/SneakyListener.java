@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,10 @@ public class SneakyListener implements Listener {
         if (CommandManager.Instance.isTrusted(p)) {
             CommandManager.Instance.addTrusted(p);
         }
+    }
+
+    public void onQuit(PlayerQuitEvent e) {
+        PacketInject.getPlayer(e.getPlayer()).unhook();
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
