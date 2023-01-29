@@ -1,4 +1,4 @@
-package net.blackofworld.sneakybastard.Utils;
+package net.blackofworld.SneakyBastard.Utils;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -18,10 +18,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
-import static net.blackofworld.sneakybastard.Utils.Reflection.setFinalStatic;
+import static net.blackofworld.SneakyBastard.Utils.Reflection.setFinalStatic;
 
 public class BukkitReflection {
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "deprecation"})
     public static boolean changeCommandBlockStatus(boolean status) throws Exception {
         String fieldName = getCommandBlockVariableName();
         if (fieldName == null) return false;

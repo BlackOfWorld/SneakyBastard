@@ -1,9 +1,11 @@
-package net.blackofworld.sneakybastard.Listeners;
+package net.blackofworld.SneakyBastard.Listeners;
 
-import net.blackofworld.sneakybastard.Command.CommandBase;
-import net.blackofworld.sneakybastard.Command.CommandManager;
-import net.blackofworld.sneakybastard.Start;
-import net.blackofworld.sneakybastard.Utils.Packets.PacketInject;
+import net.blackofworld.SneakyBastard.Extensions.Player.PlayerExt;
+import lombok.experimental.ExtensionMethod;
+import net.blackofworld.SneakyBastard.Command.CommandBase;
+import net.blackofworld.SneakyBastard.Command.CommandManager;
+import net.blackofworld.SneakyBastard.Start;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,6 +19,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+
+@ExtensionMethod(PlayerExt.class)
 public class SneakyListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onLogin(PlayerJoinEvent e) {

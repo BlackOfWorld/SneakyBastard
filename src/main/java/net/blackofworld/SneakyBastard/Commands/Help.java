@@ -1,21 +1,24 @@
-package net.blackofworld.sneakybastard.Commands;
+package net.blackofworld.SneakyBastard.Commands;
 
-import net.blackofworld.sneakybastard.Command.CommandBase;
-import net.blackofworld.sneakybastard.Command.CommandCategory;
-import net.blackofworld.sneakybastard.Command.CommandInfo;
-import net.blackofworld.sneakybastard.Command.CommandManager;
+import net.blackofworld.SneakyBastard.Extensions.Player.PlayerExt;
+import lombok.experimental.ExtensionMethod;
+import net.blackofworld.SneakyBastard.Command.CommandBase;
+import net.blackofworld.SneakyBastard.Command.CommandCategory;
+import net.blackofworld.SneakyBastard.Command.CommandInfo;
+import net.blackofworld.SneakyBastard.Command.CommandManager;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
 @CommandInfo(command = "help", category = CommandCategory.Miscellaneous, Syntax = "[command]")
+@ExtensionMethod({Player.class, PlayerExt.class})
 public class Help extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         if (args.isEmpty()) {
             return;
         }
-        String commandToSearch = args[0];
+        String commandToSearch = args.get(0);
         if (commandToSearch.startsWith("-")) commandToSearch = commandToSearch.substring(1);
         CommandBase cmd = null;
         for (var c : CommandManager.Instance.commandList) {
@@ -23,6 +26,7 @@ public class Help extends CommandBase {
             cmd = c;
         }
         if (cmd == null) {
+
             p.Reply("Command not found!");
             return;
         }

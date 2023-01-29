@@ -1,4 +1,4 @@
-package net.blackofworld.sneakybastard.Utils.Packets;
+package net.blackofworld.SneakyBastard.Utils.Packets;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

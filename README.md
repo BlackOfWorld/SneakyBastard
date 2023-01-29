@@ -24,7 +24,7 @@ However, since Spigot 1.17+, obfuscation mappings have been **removed**, resulti
 
 # Tests
 
-Testing is not planned as this project heavily relies on [NMS](# "net.minecraft.server") code, so testing will be unfeasible for a small project like this.
+Testing is not planned as this project heavily relies on NMS (*net.minecraft.server*) code, so testing will be unfeasible for a small project like this.
 
 # Run Locally
 

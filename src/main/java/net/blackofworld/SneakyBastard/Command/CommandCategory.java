@@ -1,4 +1,4 @@
-package net.blackofworld.sneakybastard.Command;
+package net.blackofworld.SneakyBastard.Command;
 
 public enum CommandCategory {
     Server, Player, Griefing, Miscellaneous

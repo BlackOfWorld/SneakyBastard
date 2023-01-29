@@ -1,8 +1,10 @@
-package net.blackofworld.sneakybastard.Commands.Griefing;
+package net.blackofworld.SneakyBastard.Commands.Griefing;
 
-import net.blackofworld.sneakybastard.Command.CommandBase;
-import net.blackofworld.sneakybastard.Command.CommandCategory;
-import net.blackofworld.sneakybastard.Command.CommandInfo;
+import net.blackofworld.SneakyBastard.Extensions.Player.PlayerExt;
+import lombok.experimental.ExtensionMethod;
+import net.blackofworld.SneakyBastard.Command.CommandBase;
+import net.blackofworld.SneakyBastard.Command.CommandCategory;
+import net.blackofworld.SneakyBastard.Command.CommandInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -23,6 +25,7 @@ import org.bukkit.inventory.meta.BannerMeta;
 import java.util.ArrayList;
 
 @CommandInfo(command = "nazis", description = "Put nazi sign on people's heads", Syntax = "", category = CommandCategory.Griefing)
+@ExtensionMethod({Player.class, PlayerExt.class})
 public class Nazis extends CommandBase {
     private final ItemStack[] banner = new ItemStack[2];
     private boolean on;

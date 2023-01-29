@@ -1,4 +1,4 @@
-package net.blackofworld.sneakybastard.Utils.Packets;
+package net.blackofworld.SneakyBastard.Utils.Packets;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

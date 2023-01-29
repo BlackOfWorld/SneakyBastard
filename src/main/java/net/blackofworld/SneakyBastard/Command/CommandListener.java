@@ -1,10 +1,11 @@
-package net.blackofworld.sneakybastard.Command;
+package net.blackofworld.SneakyBastard.Command;
 
-import net.blackofworld.sneakybastard.Start;
-import net.blackofworld.sneakybastard.Utils.Packets.IPacket;
-import net.blackofworld.sneakybastard.Utils.Packets.PacketInject.PacketEvent;
-import net.blackofworld.sneakybastard.Utils.Packets.PacketInject.PacketListener;
-import net.blackofworld.sneakybastard.Utils.Packets.PacketType;
+import net.blackofworld.SneakyBastard.Start;
+import net.blackofworld.SneakyBastard.Start.Config;
+import net.blackofworld.SneakyBastard.Utils.Packets.IPacket;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject.PacketEvent;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject.PacketListener;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketType;
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.util.Tuple;
 import org.bukkit.Bukkit;
@@ -19,8 +20,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-
-import static net.blackofworld.sneakybastard.Start.DEBUG_PACKETS;
 
 public class CommandListener implements PacketListener, Listener {
     final HashMap<String, ArrayList<Tuple<Object, Method>>> events = new HashMap<>();
@@ -78,14 +77,14 @@ public class CommandListener implements PacketListener, Listener {
 
     @IPacket(direction = PacketType.INCOMING)
     public void onIncomingPacket(PacketEvent event) {
-        if (DEBUG_PACKETS) return;
+        if (!Config.LogPackets) return;
         var packet = event.packet;
         Bukkit.getScheduler().runTask(Start.Instance, () -> Bukkit.broadcastMessage(packet.toString()));
     }
 
     @IPacket(direction = PacketType.OUTGOING)
     public void onOutboundPacket(PacketEvent event) {
-        if (DEBUG_PACKETS) return;
+        if (!Config.LogPackets) return;
         var packet = event.packet;
         if (packet.getClass().equals(ClientboundSystemChatPacket.class)) return;
         Bukkit.getScheduler().runTask(Start.Instance, () -> Bukkit.broadcastMessage(packet.toString()));

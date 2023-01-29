@@ -1,8 +1,8 @@
-package net.blackofworld.sneakybastard.Utils.Packets;
+package net.blackofworld.SneakyBastard.Utils.Packets;
 
 import io.netty.channel.Channel;
-import net.blackofworld.sneakybastard.Utils.BukkitReflection;
-import net.blackofworld.sneakybastard.Utils.Packets.PacketInject.ChannelListener;
+import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject.ChannelListener;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

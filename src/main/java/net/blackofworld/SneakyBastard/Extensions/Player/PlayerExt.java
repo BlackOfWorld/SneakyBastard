@@ -1,9 +1,9 @@
-package SneakyBastard.extensions.org.bukkit.entity.Player;
+package net.blackofworld.SneakyBastard.Extensions.Player;
 
-import net.blackofworld.sneakybastard.Command.CommandBase;
-import net.blackofworld.sneakybastard.Command.CommandManager;
-import net.blackofworld.sneakybastard.Commands.Help;
-import net.blackofworld.sneakybastard.Utils.BukkitReflection;
+import net.blackofworld.SneakyBastard.Command.CommandBase;
+import net.blackofworld.SneakyBastard.Command.CommandManager;
+import net.blackofworld.SneakyBastard.Commands.Help;
+import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
 import net.minecraft.network.protocol.Packet;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

@@ -1,6 +1,6 @@
-package net.blackofworld.sneakybastard.Command;
+package net.blackofworld.SneakyBastard.Command;
 
-import net.blackofworld.sneakybastard.Start;
+import net.blackofworld.SneakyBastard.Start;
 import org.bukkit.entity.Player;
 
 import java.lang.ref.WeakReference;

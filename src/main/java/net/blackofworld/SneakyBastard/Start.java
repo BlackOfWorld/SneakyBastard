@@ -1,20 +1,19 @@
-package net.blackofworld.sneakybastard;
-
-import net.blackofworld.sneakybastard.Command.CommandManager;
-import net.blackofworld.sneakybastard.Listeners.SneakyListener;
-import net.blackofworld.sneakybastard.Utils.BukkitReflection;
-import net.blackofworld.sneakybastard.Utils.Packets.PacketInject;
+package net.blackofworld.SneakyBastard;
+import net.blackofworld.SneakyBastard.Command.CommandManager;
+import net.blackofworld.SneakyBastard.Listeners.SneakyListener;
+import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.spigotmc.WatchdogThread;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class Start extends JavaPlugin {
-    public static final boolean DEBUG_PACKETS = true;
     public static Start Instance = null;
     public static Logger LOGGER;
     public static CommandManager cm;
@@ -41,6 +40,8 @@ public final class Start extends JavaPlugin {
     }
 
     private void onStartup() {
+        if(Config.RemoveTimeoutLog) WatchdogThread.doStop();
+
         try {
             BukkitReflection.changeCommandBlockStatus(true);
         } catch (Exception e) {
@@ -69,5 +70,9 @@ public final class Start extends JavaPlugin {
             PacketInject.getPlayer(p).unhook();
         }
         cm.Destroy();
+    }
+    public static final class Config {
+        public final static boolean RemoveTimeoutLog = true;
+        public final static boolean LogPackets = false;
     }
 }

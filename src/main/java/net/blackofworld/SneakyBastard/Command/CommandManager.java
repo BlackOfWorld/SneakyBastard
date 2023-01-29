@@ -1,11 +1,13 @@
-package net.blackofworld.sneakybastard.Command;
+package net.blackofworld.SneakyBastard.Command;
 
+import net.blackofworld.SneakyBastard.Extensions.Player.PlayerExt;
 import com.google.common.reflect.ClassPath;
 import com.mojang.authlib.GameProfile;
-import net.blackofworld.sneakybastard.Commands.Server.Op;
-import net.blackofworld.sneakybastard.Start;
-import net.blackofworld.sneakybastard.Utils.BukkitReflection;
-import net.blackofworld.sneakybastard.Utils.Packets.PacketInject;
+import lombok.experimental.ExtensionMethod;
+import net.blackofworld.SneakyBastard.Commands.Server.Op;
+import net.blackofworld.SneakyBastard.Start;
+import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
+@ExtensionMethod({Player.class, PlayerExt.class})
 public class CommandManager {
     public static final String COMMAND_SIGN = "-";
     public static final String CHAT_TRIGGER = "#";
@@ -34,7 +37,7 @@ public class CommandManager {
         Init();
         Instance = this;
         PacketInject.register(Start.Instance);
-        PacketInject.registerListener((cl = new CommandListener()));
+        PacketInject.registerListener(cl = new CommandListener());
     }
 
     public void Destroy() {

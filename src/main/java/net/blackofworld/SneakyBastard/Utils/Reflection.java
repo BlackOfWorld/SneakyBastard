@@ -1,4 +1,4 @@
-package net.blackofworld.sneakybastard.Utils;
+package net.blackofworld.SneakyBastard.Utils;
 
 
 import com.google.common.collect.HashBasedTable;
@@ -6,15 +6,13 @@ import com.google.common.collect.Table;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.*;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SuppressWarnings("removal")
+@SuppressWarnings({"removal", "SpellCheckingInspection"})
 public class Reflection {
     private static final String OBC_PREFIX = Bukkit.getServer().getClass().getPackage().getName();
     private static final String VERSION = OBC_PREFIX.replace("org.bukkit.craftbukkit", "").replace(".", "");
@@ -60,6 +58,7 @@ public class Reflection {
      * @return The looked up class.
      * @throws IllegalArgumentException If a variable or class could not be found.
      */
+    @SuppressWarnings("SpellCheckingInspection")
     public static Class<?> getClass(String lookupName) {
         return getCanonicalClass(expandVariables(lookupName));
     }
@@ -72,9 +71,9 @@ public class Reflection {
             return false;
         }
     }
-
+    
     public static <T extends AccessibleObject> T setAccessible(T object, boolean access) {
-        AccessController.doPrivileged((PrivilegedAction<T>) () -> {
+        java.security.AccessController.doPrivileged((java.security.PrivilegedAction<T>) () -> {
             object.setAccessible(access);
             return object;
         });
@@ -202,15 +201,15 @@ public class Reflection {
         throw new RuntimeException("Can't find field " + fieldName);
     }
 
-    public static Method getMethod(Class<?> clazz, String name, int paramlength) {
+    public static Method getMethod(Class<?> clazz, String name, int paramLength) {
         do {
             for (Method method : clazz.getDeclaredMethods()) {
-                if (method.getName().equals(name) && (paramlength == -1 || method.getParameterTypes().length == paramlength)) {
+                if (method.getName().equals(name) && (paramLength == -1 || method.getParameterTypes().length == paramLength)) {
                     return setAccessible(method, true);
                 }
             }
         } while ((clazz = clazz.getSuperclass()) != null);
-        throw new RuntimeException("Can't find method " + name + " with params length " + paramlength);
+        throw new RuntimeException("Can't find method " + name + " with params length " + paramLength);
     }
 
     public static Class<?> getClassCached(String lookupName) {
@@ -304,6 +303,7 @@ public class Reflection {
      * @param name - the name of the class, excluding the package.
      * @throws IllegalArgumentException If the class doesn't exist.
      */
+    @SuppressWarnings("SpellCheckingInspection")
     public static Class<?> getCraftBukkitClass(String name) {
         return getCanonicalClass(OBC_PREFIX + "." + name);
     }
@@ -338,7 +338,7 @@ public class Reflection {
     }
 
     /**
-     * Search for the first publically and privately defined constructor of the given name and parameter count.
+     * Search for the first publicly and privately defined constructor of the given name and parameter count.
      *
      * @param className - lookup name of the class, see {@link #getClass(String)}.
      * @param params    - the expected parameters.
@@ -357,6 +357,7 @@ public class Reflection {
      * @return An object that invokes this constructor.
      * @throws IllegalStateException If we cannot find this method.
      */
+    @SuppressWarnings("SpellCheckingInspection")
     public static ConstructorInvoker getConstructor(Class<?> clazz, Class<?>... params) {
         for (final Constructor<?> constructor : clazz.getDeclaredConstructors()) {
             if (params == null || Arrays.equals(constructor.getParameterTypes(), params)) {
@@ -438,8 +439,6 @@ public class Reflection {
     }
 
     private record MethodParams(String name, Class<?>[] params) {
-
-        // Ugly autogenned Lombok code
         @Override
         public boolean equals(final Object o) {
             if (o == this) return true;
@@ -473,6 +472,7 @@ public class Reflection {
     }
 
     // Necessary for deepequals
+    @SuppressWarnings("SpellCheckingInspection")
     private record ConstructorParams(Class<?>[] params) {
 
         @Override

@@ -1,6 +1,7 @@
+#file: noinspection SpellCheckingInspection,SpellCheckingInspection
 name: ${project.name}
 version: ${project.version}
-main: net.blackofworld.sneakybastard.Start
+main: net.blackofworld.SneakyBastard.Start
 load: STARTUP
 author: BlackOfWorld <3
 description: SneakyBastard, a good angel.

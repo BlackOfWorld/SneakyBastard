@@ -1,4 +1,4 @@
-package net.blackofworld.sneakybastard.Command;
+package net.blackofworld.SneakyBastard.Command;
 
 import java.lang.annotation.*;
 
