@@ -1,4 +1,4 @@
-package net.blackofworld.SneakyBastard.Extensions.Player;
+package net.blackofworld.SneakyBastard.Extensions;
 
 import net.blackofworld.SneakyBastard.Command.CommandBase;
 import net.blackofworld.SneakyBastard.Command.CommandManager;

@@ -1,11 +1,12 @@
 package net.blackofworld.SneakyBastard.Commands;
 
-import net.blackofworld.SneakyBastard.Extensions.Player.PlayerExt;
 import lombok.experimental.ExtensionMethod;
 import net.blackofworld.SneakyBastard.Command.CommandBase;
 import net.blackofworld.SneakyBastard.Command.CommandCategory;
 import net.blackofworld.SneakyBastard.Command.CommandInfo;
 import net.blackofworld.SneakyBastard.Command.CommandManager;
+import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -26,8 +27,7 @@ public class Help extends CommandBase {
             cmd = c;
         }
         if (cmd == null) {
-
-            p.Reply("Command not found!");
+            p.Reply(ChatColor.RED + "Command not found!");
             return;
         }
         p.Reply("Category: " + cmd.Category.name(),

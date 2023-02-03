@@ -1,6 +1,6 @@
 package net.blackofworld.SneakyBastard.Commands.Player;
 
-import net.blackofworld.SneakyBastard.Extensions.Player.PlayerExt;
+import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
 import lombok.experimental.ExtensionMethod;
 import net.blackofworld.SneakyBastard.Command.CommandBase;
 import net.blackofworld.SneakyBastard.Command.CommandCategory;

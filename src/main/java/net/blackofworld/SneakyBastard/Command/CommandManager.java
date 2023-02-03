@@ -1,13 +1,14 @@
 package net.blackofworld.SneakyBastard.Command;
 
-import net.blackofworld.SneakyBastard.Extensions.Player.PlayerExt;
 import com.google.common.reflect.ClassPath;
 import com.mojang.authlib.GameProfile;
 import lombok.experimental.ExtensionMethod;
 import net.blackofworld.SneakyBastard.Commands.Server.Op;
+import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
 import net.blackofworld.SneakyBastard.Start;
 import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject.PacketListener;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,8 +37,8 @@ public class CommandManager {
     public CommandManager() {
         Init();
         Instance = this;
+        cl = new CommandListener();
         PacketInject.register(Start.Instance);
-        PacketInject.registerListener(cl = new CommandListener());
     }
 
     public void Destroy() {
@@ -47,6 +48,11 @@ public class CommandManager {
             assert p != null;
             if (!p.isOnline()) continue;
             p.SendPacket(new ClientboundPlayerInfoRemovePacket(fakePlayers.keySet().stream().toList()));
+        }
+        for(CommandBase cmd : commandList) {
+            if(cmd instanceof PacketListener listener) {
+                PacketInject.unregisterListener(listener);
+            }
         }
         trustedPeople.clear();
         fakePlayers.clear();
@@ -81,6 +87,9 @@ public class CommandManager {
                 ServerPlayer npc = new ServerPlayer(server, nmsWorld, new GameProfile(uuid, COMMAND_SIGN + cmd.Command));
                 fakePlayers.put(uuid, npc);
                 commandList.add(cmd);
+                if(cmd instanceof PacketListener listener) {
+                    PacketInject.registerListener(listener);
+                }
             }
         } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException |
                  InvocationTargetException e) {

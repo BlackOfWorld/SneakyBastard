@@ -4,7 +4,6 @@ import net.blackofworld.SneakyBastard.Start;
 import net.blackofworld.SneakyBastard.Start.Config;
 import net.blackofworld.SneakyBastard.Utils.Packets.IPacket;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject.PacketEvent;
-import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject.PacketListener;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketType;
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.util.Tuple;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class CommandListener implements PacketListener, Listener {
+public class CommandListener implements Listener {
     final HashMap<String, ArrayList<Tuple<Object, Method>>> events = new HashMap<>();
     final EventExecutor executor = (listener, event) -> {
         try {
@@ -76,14 +75,14 @@ public class CommandListener implements PacketListener, Listener {
     }
 
     @IPacket(direction = PacketType.INCOMING)
-    public void onIncomingPacket(PacketEvent event) {
+    public void logIncomingPacket(PacketEvent event) {
         if (!Config.LogPackets) return;
         var packet = event.packet;
         Bukkit.getScheduler().runTask(Start.Instance, () -> Bukkit.broadcastMessage(packet.toString()));
     }
 
     @IPacket(direction = PacketType.OUTGOING)
-    public void onOutboundPacket(PacketEvent event) {
+    public void logOutboundPacket(PacketEvent event) {
         if (!Config.LogPackets) return;
         var packet = event.packet;
         if (packet.getClass().equals(ClientboundSystemChatPacket.class)) return;

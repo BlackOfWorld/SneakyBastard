@@ -5,7 +5,7 @@ import net.blackofworld.SneakyBastard.Command.CommandCategory;
 import net.blackofworld.SneakyBastard.Command.CommandInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import net.blackofworld.SneakyBastard.Extensions.Player.PlayerExt;
+import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
 import lombok.experimental.ExtensionMethod;
 import java.util.ArrayList;
 
