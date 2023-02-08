@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 @CommandInfo(command = "help", category = CommandCategory.Miscellaneous, Syntax = "[command]")
 @ExtensionMethod({Player.class, PlayerExt.class})
-public class Help extends CommandBase {
+public final class Help extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         if (args.isEmpty()) {
@@ -30,7 +30,7 @@ public class Help extends CommandBase {
             p.Reply(ChatColor.RED + "Command not found!");
             return;
         }
-        p.Reply("Category: " + cmd.Category.name(),
+        p.Reply("Category: " + cmd.strCategory(),
                 "Description: " + cmd.Description,
                 "Syntax: " + cmd.Syntax);
     }

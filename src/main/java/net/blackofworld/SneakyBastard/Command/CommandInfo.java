@@ -2,17 +2,15 @@ package net.blackofworld.SneakyBastard.Command;
 
 import java.lang.annotation.*;
 
-@Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
 public @interface CommandInfo {
     String command();
 
     String description() default "";
 
-    String Syntax();
+    String Syntax() default "";
 
-    CommandCategory category();
+    int category();
 
     int requiredArgs() default 0;
 }
