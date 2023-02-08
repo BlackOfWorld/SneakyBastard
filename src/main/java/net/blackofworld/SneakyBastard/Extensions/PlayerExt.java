@@ -30,7 +30,13 @@ public final class PlayerExt {
     }
 
     public static void sendHelp(final @NotNull Player p, @NotNull CommandBase cmd) { sendHelp(p, cmd, new String[] {}); }
-
+    public static void sendException(final @NotNull Player p, @NotNull Exception e, String... optional) {
+        PlayerExt.Reply(p, optional);
+        PlayerExt.Reply(p, e.toString());
+    }
+    public static void sendException(final @NotNull Player p, @NotNull Exception e) {
+        sendException(p, e, new String[] {});
+    }
     public static void Reply(final @NotNull Player player, @NotNull String... message) {
         for (var msg : message) {
             player.sendMessage(CommandManager.COMMAND_PREFIX + msg.replaceAll("\n", "\n" + CommandManager.COMMAND_PREFIX));

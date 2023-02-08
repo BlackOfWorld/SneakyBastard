@@ -24,6 +24,5 @@ public final class DeOP extends CommandBase {
         if (args.size() > 0) {
             p.Reply(pp.getName() + " is no longer an operator");
         } else p.Reply("You are no longer an operator");
-
     }
 }
