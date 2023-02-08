@@ -1,47 +1,145 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <!-- MockBukkit: false -->
     <modelVersion>4.0.0</modelVersion>
-
     <name>SneakyBastard</name>
     <groupId>net.blackofworld</groupId>
     <artifactId>SneakyBastard</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-
     <properties>
         <spigotVersion>1.19.3</spigotVersion>
         <javaVersion>17</javaVersion>
         <testServerPath>D:\mc-server\plugins</testServerPath>
         <shadedPackage>${project.groupId}.${project.artifactId}.shaded</shadedPackage>
-        <mainClass>${project.groupId}.${project.artifactId}.Start</mainClass>
+        <mainPackage>${project.groupId}.${project.artifactId}</mainPackage>
         <isDebugMode>true</isDebugMode>
         <isReleaseMode>false</isReleaseMode>
-
+        <outputFileName>${project.build.finalName}.jar</outputFileName>
         <!-- Do not change the following properties -->
         <outputDirectory>target</outputDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <manifold.version>2022.1.37</manifold.version>
         <lombok.version>1.18.24</lombok.version>
     </properties>
-
     <profiles>
         <profile>
             <id>ReleaseMode</id>
             <properties>
                 <isDebugMode>false</isDebugMode>
                 <isReleaseMode>true</isReleaseMode>
+                <outputFileName>${project.build.finalName}-small.jar</outputFileName>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.wvengen</groupId>
+                        <artifactId>proguard-maven-plugin</artifactId>
+                        <version>2.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>shaded</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>proguard</goal>
+                                </goals>
+                                <configuration>
+                                    <proguardVersion>7.3.1</proguardVersion>
+                                    <injar>${project.artifactId}-${project.version}.jar</injar>
+                                    <!--<outputDirectory>${testServerPath}</outputDirectory>-->
+                                    <attach>true</attach>
+                                    <obfuscate>true</obfuscate>
+                                    <options>
+                                        <option>-optimizationpasses 5</option>
+                                        <option>-dontskipnonpubliclibraryclasses</option>
+                                        <option>-repackageclasses '${mainPackage}'</option>
+                                        <option>-dontnote</option>
+                                        <option>-keep class net.minecraft.** {*;}</option>
+                                        <option>-keep class org.apache.commons.** { *; }</option>
+                                        <option>-keep class org.apache.bcel.** { *; }</option>
+                                        <option>-dontwarn net.minecraft.**</option>
+                                        <option>-dontwarn org.apache.commons.**</option>
+                                        <option>-dontwarn org.apache.bcel.**</option>
+                                        <option>-keepclassmembers,allowoptimization @interface ${mainPackage}.**</option>
+                                        <option>-keepattributes Exceptions,Signature,InnerClasses,SourceFile,*Annotation*,EnclosingMethod
+                                        </option>
+                                        <option>-keepclassmembers enum * {
+                                            <![CDATA[<fields>]]>;
+                                            **[] *;
+                                            ** valueOf(*);
+                                            }
+                                        </option>
+                                        <option>-keep public class ${mainPackage}.Start</option>
+
+                                        <option>-keep,allowoptimization,allowobfuscation public class ${mainPackage}.** implements org.bukkit.event.Listener {*;} </option>
+                                        <option>-keep,allowoptimization,allowobfuscation public class ${mainPackage}.** extends ${mainPackage}.Command.CommandBase {*;} </option>
+                                        <option>-keepattributes
+                                            **,Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,Synthetic,EnclosingMethod,EventHandler,Override,CommandInfo,MethodParameters
+                                        </option>
+                                    </options>
+                                    <libs>
+                                        <lib>${java.home}/jmods/java.base.jmod</lib>
+                                        <lib>${java.home}/jmods/java.desktop.jmod</lib>
+                                        <lib>${java.home}/jmods/java.logging.jmod</lib>
+                                        <lib>${java.home}/jmods/java.management.jmod</lib>
+                                        <lib>${user.home}/.m2/repository/org/bukkit/craftbukkit/1.19.3-R0.1-SNAPSHOT/craftbukkit-1.19.3-R0.1-SNAPSHOT-remapped-obf.jar</lib>
+                                    </libs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.guardsquare</groupId>
+                                <artifactId>proguard-base</artifactId>
+                                <version>7.3.1</version>
+                                <scope>runtime</scope>
+                            </dependency>
+                            <dependency>
+                                <groupId>com.guardsquare</groupId>
+                                <artifactId>proguard-core</artifactId>
+                                <version>9.0.7</version>
+                                <scope>runtime</scope>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>exportToServer</id>
-            <properties>
-                <outputDirectory>${testServerPath}</outputDirectory>
-            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resource-one</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${testServerPath}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>target</directory>
+                                            <includes>
+                                                <include>${outputFileName}</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
-    </profiles>
 
+    </profiles>
     <build>
         <resources>
             <resource>
@@ -50,6 +148,33 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>1.18.20.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>delombok</goal>
+                        </goals>
+                        <configuration>
+                            <formatPreferences>
+                                <javaLangAsFQN>skip</javaLangAsFQN>
+                            </formatPreferences>
+                            <addOutputDirectory>false</addOutputDirectory>
+                            <sourceDirectory>src/main/java</sourceDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.github.peichhorn</groupId>
+                        <artifactId>lombok-pg</artifactId>
+                        <version>0.11.3</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -154,40 +279,18 @@
                 </executions>
             </plugin>
             <!-- Remapping end -->
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-resource-one</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${testServerPath}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>target</directory>
-                                    <includes>
-                                        <include>${project.build.finalName}.jar</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
-
     <repositories>
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>lombok-pg</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
     </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.bcel</groupId>
@@ -211,6 +314,12 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.peichhorn</groupId>
+            <artifactId>lombok-pg</artifactId>
+            <version>0.11.3</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
