@@ -15,7 +15,6 @@ public class PacketPlayer {
     private final Channel channel;
 
     private final ChannelListener channelListener;
-
     private boolean hooked;
 
     PacketPlayer(Player player) {

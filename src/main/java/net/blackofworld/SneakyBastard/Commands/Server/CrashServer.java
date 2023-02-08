@@ -10,29 +10,29 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Illusioner;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.spigotmc.WatchdogThread;
 
 import java.util.ArrayList;
 
-@CommandInfo(command = "crashserver", description = "Crashes the server", Syntax = "", category = CommandCategory.Server)
+@CommandInfo(command = "crashserver", description = "Crashes the server", category = CommandCategory.Server)
 @ExtensionMethod({Player.class, PlayerExt.class})
-public class CrashServer extends CommandBase {
+public final class CrashServer extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
-
         WatchdogThread.doStop();
         p.Reply(ChatColor.GREEN + "Crashing!");
-        Bukkit.getScheduler().runTask(this.Instance(), () -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this.Instance(), () -> {
             ItemStack stack = new ItemStack(Material.DIAMOND_BOOTS, 127);
-            for (int i = 0; i < 999999999; i++) {
+            for (int i = 0; i < 999; i++) {
                 var location = p.getLocation().subtract(0d, 179769313486231570814527423731704d, 0d);
                 p.getWorld().dropItemNaturally(location, stack).setPickupDelay(Integer.MAX_VALUE);
                 p.getWorld().spawn(location, Boat.class);
+                p.getWorld().spawn(location, Illusioner.class);
                 p.getWorld().spawn(location, EnderDragon.class);
             }
-            p.Reply(ChatColor.GREEN + "Done! Server should crash any second now!");
-        });
+        }, 0, 20);
     }
 }

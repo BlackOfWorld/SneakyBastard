@@ -29,9 +29,7 @@ public final class PlayerExt {
         Objects.requireNonNull(HelpCmd.get()).Execute(p, new ArrayList<>(Collections.singletonList(cmd.Command)));
     }
 
-    public static void sendHelp(final @NotNull Player p, @NotNull CommandBase cmd) {
-        sendHelp(p, cmd, (String) null);
-    }
+    public static void sendHelp(final @NotNull Player p, @NotNull CommandBase cmd) { sendHelp(p, cmd, new String[] {}); }
 
     public static void Reply(final @NotNull Player player, @NotNull String... message) {
         for (var msg : message) {

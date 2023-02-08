@@ -1,4 +1,6 @@
 package net.blackofworld.SneakyBastard;
+
+import net.blackofworld.SneakyBastard.Command.CommandCategory;
 import net.blackofworld.SneakyBastard.Command.CommandManager;
 import net.blackofworld.SneakyBastard.Listeners.SneakyListener;
 import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
@@ -17,12 +19,12 @@ public final class Start extends JavaPlugin {
     public static Start Instance = null;
     public static Logger LOGGER;
     public static CommandManager cm;
+    CommandCategory category;
     private final PluginDescriptionFile pdfFile = this.getDescription();
     private boolean isReload;
 
     private void onPostWorldLoad() {
         cm = new CommandManager();
-        CommandManager.Instance = cm;
         //packetInjector = new PacketInjector();
         Bukkit.getPluginManager().registerEvents(new SneakyListener(), this);
         String loadString = "--| " + pdfFile.getName() + " (version " + pdfFile.getVersion() + ") loaded |--";
@@ -72,7 +74,7 @@ public final class Start extends JavaPlugin {
         cm.Destroy();
     }
     public static final class Config {
-        public final static boolean RemoveTimeoutLog = true;
-        public final static boolean LogPackets = false;
+        public static final boolean RemoveTimeoutLog = true;
+        public static final boolean LogPackets = false;
     }
 }

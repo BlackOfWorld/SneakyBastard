@@ -12,9 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-@CommandInfo(command = "more", description = "Gimme more items please", Syntax = "", category = CommandCategory.Miscellaneous)
+@CommandInfo(command = "more", description = "Gimme more items please", category = CommandCategory.Miscellaneous)
 @ExtensionMethod({Player.class, PlayerExt.class})
-public class More extends CommandBase {
+public final class More extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         final ItemStack stack = p.getInventory().getItemInMainHand();

