@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class CommandListener implements Listener {
+import static net.blackofworld.SneakyBastard.Utils.Packets.PacketInject.PacketListener;
+
+public class CommandListener implements Listener, PacketListener {
     final HashMap<String, ArrayList<Tuple<Object, Method>>> events = new HashMap<>();
     final EventExecutor executor = (listener, event) -> {
         try {

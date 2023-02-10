@@ -1,6 +1,7 @@
 package net.blackofworld.SneakyBastard.Command;
 
 import net.blackofworld.SneakyBastard.Start;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.lang.ref.WeakReference;
@@ -27,6 +28,14 @@ public abstract class CommandBase {
             case CommandCategory.Miscellaneous -> "Miscellaneous";
             default -> throw new RuntimeException("doo doo retard");
         };
+    }
+    protected Player firstParamCouldBePlayer(Player p, ArrayList<String> args) {
+        Player pp = p;
+        if (args.size() > 0) {
+            pp = Bukkit.getPlayerExact(args.get(0));
+        }
+        assert pp != null;
+        return pp;
     }
 
     private CommandInfo getInfo() {

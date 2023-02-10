@@ -36,8 +36,10 @@ public class CommandManager {
     public CommandManager() {
         Init();
         Instance = this;
-        cl = new CommandListener();
         PacketInject.register(Start.Instance);
+        cl = new CommandListener();
+        if(Start.Config.LogPackets)
+            PacketInject.registerListener(cl);
     }
 
     public void Destroy() {
