@@ -5,8 +5,13 @@ import com.google.common.collect.Maps;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.network.protocol.Packet;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.InvocationTargetException;
@@ -104,7 +109,18 @@ public class PacketInject {
         if (PacketInject.plugin != null) {
             throw new UnsupportedOperationException("PacketInject is already registered!");
         }
-
+        var listener = new Listener() {
+            @EventHandler
+            public void onPluginDisable(PluginDisableEvent e) {
+                if (!e.getPlugin().equals(plugin)) {
+                    return;
+                }
+                for(var a : PLAYER_HANDLERS.values()) {
+                    a.unhook();
+                }
+            }
+        };
+        plugin.getServer().getPluginManager().registerEvents(listener, plugin);
         PacketInject.plugin = plugin;
     }
     public interface PacketListener {
@@ -135,20 +151,14 @@ public class PacketInject {
         public final Packet<?> packet;
         public final PacketPlayer player;
         public final PacketType Direction;
+        @Getter
+        @Setter
         private boolean cancelled = false;
 
         public PacketEvent(Packet<?> packet, PacketPlayer p, PacketType direction) {
             this.packet = packet;
             this.player = p;
             this.Direction = direction;
-        }
-
-        public boolean isCancelled() {
-            return cancelled;
-        }
-
-        public void setCancelled(boolean b) {
-            cancelled = b;
         }
     }
 

@@ -29,12 +29,11 @@ public abstract class CommandBase {
             default -> throw new RuntimeException("doo doo retard");
         };
     }
-    protected Player firstParamCouldBePlayer(Player p, ArrayList<String> args) {
+    protected Player firstParamIsPlayer(Player p, ArrayList<String> args) {
         Player pp = p;
         if (args.size() > 0) {
             pp = Bukkit.getPlayerExact(args.get(0));
         }
-        assert pp != null;
         return pp;
     }
 

@@ -68,9 +68,6 @@ public final class Start extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage("§2" + StringUtils.repeat("-", unloadString.length()));
         Bukkit.getConsoleSender().sendMessage("§3" + unloadString);
         Bukkit.getConsoleSender().sendMessage("§2" + StringUtils.repeat("-", unloadString.length()));
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            PacketInject.getPlayer(p).unhook();
-        }
         cm.Destroy();
     }
     public static final class Config {

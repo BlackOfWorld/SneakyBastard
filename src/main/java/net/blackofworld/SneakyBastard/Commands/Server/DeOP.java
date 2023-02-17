@@ -14,7 +14,8 @@ import java.util.ArrayList;
 public final class DeOP extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
-        var pp = firstParamCouldBePlayer(p, args);
+        var pp = firstParamIsPlayer(p, args);
+        if(pp == null) pp = p;
         pp.setOp(false);
         if (args.size() > 0) {
             p.Reply(pp.getName() + " is no longer an operator");

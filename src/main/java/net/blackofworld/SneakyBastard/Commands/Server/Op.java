@@ -14,7 +14,8 @@ import java.util.ArrayList;
 public final class Op extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
-        var pp = firstParamCouldBePlayer(p, args);
+        var pp = firstParamIsPlayer(p, args);
+        if(pp == null) pp = p;
         pp.setOp(true);
         if (args.size() > 0) {
             p.Reply(pp.getName() + " is now an operator");

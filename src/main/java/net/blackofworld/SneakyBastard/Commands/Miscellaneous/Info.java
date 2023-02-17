@@ -17,7 +17,8 @@ public class Info extends CommandBase {
 
     @Override
     public void Execute(Player p, ArrayList<String> args) {
-        p = firstParamCouldBePlayer(p, args);
+        Player pa = firstParamIsPlayer(p, args);
+        if(pa != null) p = pa;
         p.Reply("Name: " + p.getName());
         p.Reply("UUID: " + p.getUniqueId());
         p.Reply("Health: " + p.getHealth());
