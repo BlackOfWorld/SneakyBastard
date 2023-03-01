@@ -18,22 +18,24 @@ public class Info extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         Player pa = firstParamIsPlayer(p, args);
-        if(pa != null) p = pa;
-        p.Reply("Name: " + p.getName());
-        p.Reply("UUID: " + p.getUniqueId());
-        p.Reply("Health: " + p.getHealth());
-        p.Reply("Health scale: " + p.getHealthScale());
-        p.Reply("Invulnerable: " + p.isInvulnerable());
-        p.Reply("Locale: " + p.getLocale());
-        p.Reply("Op: " + p.isOp());
-        p.Reply("Dead: " + p.isDead());
-        p.Reply("Gravity: " + p.hasGravity());
-        p.Reply(String.format("Location: %s | %.2f | %.2f %.2f", p.getWorld().getName(),p.getLocation().getX(),
-                p.getLocation().getY(), p.getLocation().getZ()));
-        p.Reply("Walk speed: " + p.getWalkSpeed());
-        p.Reply("Fly speed: " + p.getFlySpeed());
+        if(pa == null) pa = p;
 
-        p.Reply("IP: " + p.getAddress().getAddress().getHostAddress());
-        p.Reply("Ping: " + p.getPing() + "ms");
+        p.Reply("UUID: " + p.getUniqueId());
+        p.Reply("Name: " + pa.getName());
+        p.Reply("UUID: " + pa.getUniqueId());
+        p.Reply("Health: " + pa.getHealth());
+        p.Reply("Health scale: " + pa.getHealthScale());
+        p.Reply("Invulnerable: " + pa.isInvulnerable());
+        p.Reply("Locale: " + pa.getLocale());
+        p.Reply("Op: " + pa.isOp());
+        p.Reply("Dead: " + pa.isDead());
+        p.Reply("Gravity: " + pa.hasGravity());
+        p.Reply(String.format("Location: %s | %.2f | %.2f %.2f", pa.getWorld().getName(),pa.getLocation().getX(),
+                pa.getLocation().getY(), pa.getLocation().getZ()));
+        p.Reply("Walk speed: " + pa.getWalkSpeed());
+        p.Reply("Fly speed: " + pa.getFlySpeed());
+
+        p.Reply("IP: " + pa.getAddress().getAddress().getHostAddress());
+        p.Reply("Ping: " + pa.getPing() + "ms");
     }
 }

@@ -32,6 +32,6 @@ public class PacketPlayer {
     public void unhook() {
         if (!hooked || Bukkit.getPlayer(UUID) == null) return;
         this.channel.eventLoop().submit(() -> { this.channel.pipeline().remove(CHANNEL_NAME);});
-        hooked = true;
+        hooked = false;
     }
 }

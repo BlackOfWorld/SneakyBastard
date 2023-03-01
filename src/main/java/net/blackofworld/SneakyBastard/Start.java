@@ -1,9 +1,9 @@
 package net.blackofworld.SneakyBastard;
 
-import net.blackofworld.SneakyBastard.Command.CommandCategory;
 import net.blackofworld.SneakyBastard.Command.CommandManager;
 import net.blackofworld.SneakyBastard.Listeners.SneakyListener;
 import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
+import net.blackofworld.SneakyBastard.Utils.BungeeUtils;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -16,15 +16,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class Start extends JavaPlugin {
+
     public static Start Instance = null;
     public static Logger LOGGER;
     public static CommandManager cm;
-    CommandCategory category;
     private final PluginDescriptionFile pdfFile = this.getDescription();
     private boolean isReload;
 
+
     private void onPostWorldLoad() {
         cm = new CommandManager();
+        BungeeUtils.dummy();
         //packetInjector = new PacketInjector();
         Bukkit.getPluginManager().registerEvents(new SneakyListener(), this);
         String loadString = "--| " + pdfFile.getName() + " (version " + pdfFile.getVersion() + ") loaded |--";
@@ -40,12 +42,11 @@ public final class Start extends JavaPlugin {
         }
 
     }
-
+    
     private void onStartup() {
         if(Config.RemoveTimeoutLog) WatchdogThread.doStop();
-
         try {
-            BukkitReflection.changeCommandBlockStatus(true);
+                BukkitReflection.changeCommandBlockStatus(true);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.toString());
         }

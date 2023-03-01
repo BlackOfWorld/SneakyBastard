@@ -14,8 +14,8 @@ import org.apache.bcel.generic.*;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 import static net.blackofworld.SneakyBastard.Utils.Reflection.setFinalStatic;

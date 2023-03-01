@@ -3,6 +3,7 @@ package net.blackofworld.SneakyBastard.Utils.Packets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import lombok.Getter;
@@ -126,6 +127,8 @@ public class PacketInject {
     public interface PacketListener {
     }
 
+
+    @ChannelHandler.Sharable
     public static class ChannelListener extends ChannelDuplexHandler {
         private final PacketPlayer player;
 

@@ -12,7 +12,7 @@
     <properties>
         <spigotVersion>1.19.3</spigotVersion>
         <javaVersion>17</javaVersion>
-        <testServerPath>D:\mc-server\plugins</testServerPath>
+        <testServerPath>D:\mc-server\server\plugins</testServerPath>
         <shadedPackage>${project.groupId}.${project.artifactId}.shaded</shadedPackage>
         <mainPackage>${project.groupId}.${project.artifactId}</mainPackage>
         <isDebugMode>true</isDebugMode>
@@ -33,6 +33,15 @@
             </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>net/blackofworld/SneakyBastard/Commands/Debug.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>com.github.wvengen</groupId>
                         <artifactId>proguard-maven-plugin</artifactId>
@@ -147,7 +156,7 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok-maven-plugin</artifactId>
                 <version>1.18.20.0</version>
@@ -162,7 +171,7 @@
                                 <javaLangAsFQN>skip</javaLangAsFQN>
                             </formatPreferences>
                             <addOutputDirectory>false</addOutputDirectory>
-                            <sourceDirectory>src/main/java</sourceDirectory>
+                            <sourceDirectory>lmbk/main/java</sourceDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -173,7 +182,7 @@
                         <version>0.11.3</version>
                     </dependency>
                 </dependencies>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -304,12 +313,6 @@
             <classifier>remapped-mojang</classifier>
         </dependency>
         <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>23.1.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
@@ -320,6 +323,17 @@
             <artifactId>lombok-pg</artifactId>
             <version>0.11.3</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
         </dependency>
     </dependencies>
 </project>
