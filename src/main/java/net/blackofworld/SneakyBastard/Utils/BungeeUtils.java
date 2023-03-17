@@ -41,7 +41,7 @@ public class BungeeUtils {
     };
 
     static {
-        proxyEnabled = isProxyEnabled(false);
+        proxyEnabled = isProxyEnabled();
         if (proxyEnabled) {
             Bukkit.getMessenger().registerOutgoingPluginChannel(Start.Instance, "BungeeCord");
             Bukkit.getMessenger().registerIncomingPluginChannel(Start.Instance, "BungeeCord", listener);
@@ -51,9 +51,23 @@ public class BungeeUtils {
     public static void dummy() {
     }
 
+    public static Boolean kickPlayer(final String playerName, final String message) {
+        try {
+            if (!proxyEnabled) return null;
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("KickPlayer");
+            out.writeUTF(playerName);
+            out.writeUTF(message);
+            getServer().sendPluginMessage(Start.Instance, "BungeeCord", out.toByteArray());
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
     @SneakyThrows()
     public static Boolean isPlayerOnline(final String playerName) {
-        if(proxyEnabled) return null;
+        if(!proxyEnabled) return null;
         ExecutorService service = Executors.newFixedThreadPool(1);
 
         Future<Boolean> result = service.submit(() -> {
@@ -65,7 +79,7 @@ public class BungeeUtils {
             var queue = tasks.get().getOrDefault("PlayerList", new ArrayDeque<>());
             queue.add((s, player, message) -> {
                 ByteArrayDataInput in = ByteStreams.newDataInput(message);
-                if (in.readUTF().equals("") || in.readUTF().equals("")) {
+                if (in.readUTF().equals("") && in.readUTF().equals("")) {
                     return;
                 }
                 String pll = in.readUTF();
@@ -77,22 +91,13 @@ public class BungeeUtils {
         });
         try {
             return result.get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    private static boolean isProxyEnabled(boolean extended) {
-        if (extended) {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("PlayerList");
-            out.writeUTF("ALL");
-            getServer().sendPluginMessage(Start.Instance, "BungeeCord", out.toByteArray());
-
-        }
+    private static boolean isProxyEnabled() {
         // Start.Instance.getConfig()
         return SpigotConfig.bungee && !getServer().getOnlineMode();
     }

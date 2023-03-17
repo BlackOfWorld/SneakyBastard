@@ -5,9 +5,11 @@ import net.blackofworld.SneakyBastard.Command.CommandBase;
 import net.blackofworld.SneakyBastard.Command.CommandCategory;
 import net.blackofworld.SneakyBastard.Command.CommandInfo;
 import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 @CommandInfo(command = "info", category = CommandCategory.Miscellaneous, description = "Tells you stuff about yourself or another player", Syntax = "[player]")
@@ -20,7 +22,6 @@ public class Info extends CommandBase {
         Player pa = firstParamIsPlayer(p, args);
         if(pa == null) pa = p;
 
-        p.Reply("UUID: " + p.getUniqueId());
         p.Reply("Name: " + pa.getName());
         p.Reply("UUID: " + pa.getUniqueId());
         p.Reply("Health: " + pa.getHealth());
@@ -30,12 +31,12 @@ public class Info extends CommandBase {
         p.Reply("Op: " + pa.isOp());
         p.Reply("Dead: " + pa.isDead());
         p.Reply("Gravity: " + pa.hasGravity());
-        p.Reply(String.format("Location: %s | %.2f | %.2f %.2f", pa.getWorld().getName(),pa.getLocation().getX(),
+        p.Reply("Location: %s | %.2f | %.2f %.2f".formatted(pa.getWorld().getName(),pa.getLocation().getX(),
                 pa.getLocation().getY(), pa.getLocation().getZ()));
         p.Reply("Walk speed: " + pa.getWalkSpeed());
         p.Reply("Fly speed: " + pa.getFlySpeed());
 
-        p.Reply("IP: " + pa.getAddress().getAddress().getHostAddress());
-        p.Reply("Ping: " + pa.getPing() + "ms");
+        p.Reply("IP: %s".formatted(Objects.requireNonNull(pa.getAddress()).isUnresolved() ? pa.getAddress().getHostName() + ChatColor.RED + "(UNRESOLVED)" + ChatColor.RESET : pa.getAddress().getAddress().getHostAddress()));
+        p.Reply("Ping: %dms".formatted(pa.getPing()));
     }
 }

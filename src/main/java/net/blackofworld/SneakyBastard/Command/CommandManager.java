@@ -6,8 +6,8 @@ import lombok.experimental.ExtensionMethod;
 import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
 import net.blackofworld.SneakyBastard.Start;
 import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
-import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject;
-import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject.PacketListener;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInjector;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInjector.PacketListener;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,10 +36,9 @@ public class CommandManager {
     public CommandManager() {
         Init();
         Instance = this;
-        PacketInject.register(Start.Instance);
         cl = new CommandListener();
         if(Start.Config.LogPackets)
-            PacketInject.registerListener(cl);
+            PacketInjector.registerListener(cl);
     }
 
     public void Destroy() {
@@ -52,7 +51,7 @@ public class CommandManager {
         }
         for(CommandBase cmd : commandList) {
             if(cmd instanceof PacketListener listener) {
-                PacketInject.unregisterListener(listener);
+                PacketInjector.unregisterListener(listener);
             }
         }
         trustedPeople.clear();
@@ -89,7 +88,7 @@ public class CommandManager {
                     fakePlayers.put(uuid, npc);
                     commandList.add(cmd);
                     if (cmd instanceof PacketListener listener) {
-                        PacketInject.registerListener(listener);
+                        PacketInjector.registerListener(listener);
                     }
                 }
             }

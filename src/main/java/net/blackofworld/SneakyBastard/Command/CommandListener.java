@@ -3,7 +3,8 @@ package net.blackofworld.SneakyBastard.Command;
 import net.blackofworld.SneakyBastard.Start;
 import net.blackofworld.SneakyBastard.Start.Config;
 import net.blackofworld.SneakyBastard.Utils.Packets.IPacket;
-import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject.PacketEvent;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketEvent;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInjector.PacketListener;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketType;
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.util.Tuple;
@@ -19,8 +20,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-
-import static net.blackofworld.SneakyBastard.Utils.Packets.PacketInject.PacketListener;
 
 public class CommandListener implements Listener, PacketListener {
     final HashMap<String, ArrayList<Tuple<Object, Method>>> events = new HashMap<>();
@@ -80,6 +79,9 @@ public class CommandListener implements Listener, PacketListener {
     public void logIncomingPacket(PacketEvent event) {
         if (!Config.LogPackets) return;
         var packet = event.packet;
+        if (packet.toString().contains("BlockChange") || packet.toString().contains("KeepAlive")) {
+            return;
+        }
         Bukkit.getScheduler().runTask(Start.Instance, () -> Bukkit.broadcastMessage(packet.toString()));
     }
 
@@ -87,8 +89,9 @@ public class CommandListener implements Listener, PacketListener {
     public void logOutboundPacket(PacketEvent event) {
         if (!Config.LogPackets) return;
         var packet = event.packet;
+        if (packet.toString().contains("BlockChange") || packet.toString().contains("KeepAlive")) return;
         if (packet.getClass().equals(ClientboundSystemChatPacket.class)) return;
-        Bukkit.getScheduler().runTask(Start.Instance, () -> Bukkit.broadcastMessage(packet.toString()));
+        Bukkit.getScheduler().runTaskAsynchronously(Start.Instance, () -> Bukkit.broadcastMessage(packet.toString()));
     }
 
     public void Destroy() {

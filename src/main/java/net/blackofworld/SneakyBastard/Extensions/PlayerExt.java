@@ -3,9 +3,7 @@ package net.blackofworld.SneakyBastard.Extensions;
 import net.blackofworld.SneakyBastard.Command.CommandBase;
 import net.blackofworld.SneakyBastard.Command.CommandManager;
 import net.blackofworld.SneakyBastard.Commands.Help;
-import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.server.MinecraftServer;
 import org.bukkit.entity.Player;
 
 import java.lang.ref.WeakReference;
@@ -14,6 +12,9 @@ import java.util.Collections;
 import java.util.Objects;
 
 import static lombok.Validate.NotNull;
+import static net.blackofworld.SneakyBastard.Utils.BukkitReflection.getMinecraftServer;
+import static net.blackofworld.SneakyBastard.Utils.BukkitReflection.getServerPlayer;
+
 public final class PlayerExt {
     private static WeakReference<CommandBase> HelpCmd = null;
 
@@ -30,8 +31,11 @@ public final class PlayerExt {
         Objects.requireNonNull(HelpCmd.get()).Execute(p, new ArrayList<>(Collections.singletonList(cmd.Command)));
     }
     public static void SetOp(final @NotNull Player p, boolean value) {
-        if(value) MinecraftServer.getServer().getPlayerList().op(BukkitReflection.getServerPlayer(p).getGameProfile());
-        else MinecraftServer.getServer().getPlayerList().deop(BukkitReflection.getServerPlayer(p).getGameProfile());
+        if(value) {
+            getMinecraftServer().getPlayerList().op(getServerPlayer(p).getGameProfile());
+        } else {
+            getMinecraftServer().getPlayerList().deop(getServerPlayer(p).getGameProfile());
+        }
     }
     public static void sendHelp(final @NotNull Player p, @NotNull CommandBase cmd) { sendHelp(p, cmd, new String[] {}); }
     public static void sendException(final @NotNull Player p, @NotNull Exception e, String... optional) {
@@ -48,6 +52,6 @@ public final class PlayerExt {
     }
 
     public static void SendPacket(final @NotNull Player player, @NotNull Packet<?> packet) {
-        BukkitReflection.getServerPlayer(player).connection.send(packet);
+        getServerPlayer(player).connection.send(packet);
     }
 }

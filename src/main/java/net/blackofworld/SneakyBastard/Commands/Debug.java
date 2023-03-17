@@ -32,13 +32,10 @@ public class Debug extends CommandBase {
     private Location first;
     @Override
     public void Execute(Player p, ArrayList<String> args) {
-        switch(args.get(0)) {
-            case "blocks":
-                doBlocks(p);
-                break;
-            default:
-                p.sendHelp(this);
-                break;
+
+        switch (args.get(0)) {
+            case "blocks" -> p.Reply(doBlocks(p) ? "Successes!" : "Error!");
+            default -> p.sendHelp(this);
         }
     }
     @SneakyThrows
@@ -50,14 +47,14 @@ public class Debug extends CommandBase {
             return true;
         }
 
-        int topBlockX = (first.getBlockX() < pl.getBlockX() ? pl.getBlockX() : first.getBlockX());
-        int bottomBlockX = (first.getBlockX() > pl.getBlockX() ? pl.getBlockX() : first.getBlockX());
+        int topBlockX = (Math.max(first.getBlockX(), pl.getBlockX()));
+        int bottomBlockX = (Math.min(first.getBlockX(), pl.getBlockX()));
 
-        int topBlockY = (first.getBlockY() < pl.getBlockY() ? pl.getBlockY() : first.getBlockY());
-        int bottomBlockY = (first.getBlockY() > pl.getBlockY() ? pl.getBlockY() : first.getBlockY());
+        int topBlockY = (Math.max(first.getBlockY(), pl.getBlockY()));
+        int bottomBlockY = (Math.min(first.getBlockY(), pl.getBlockY()));
 
-        int topBlockZ = (first.getBlockZ() < pl.getBlockZ() ? pl.getBlockZ() : first.getBlockZ());
-        int bottomBlockZ = (first.getBlockZ() > pl.getBlockZ() ? pl.getBlockZ() : first.getBlockZ());
+        int topBlockZ = (Math.max(first.getBlockZ(), pl.getBlockZ()));
+        int bottomBlockZ = (Math.min(first.getBlockZ(), pl.getBlockZ()));
 
         BufferedWriter log = createLogFile("Blocks");
 

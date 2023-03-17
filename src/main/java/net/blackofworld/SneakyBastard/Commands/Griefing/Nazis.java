@@ -62,14 +62,12 @@ public class Nazis extends CommandBase {
             pe.getInventory().setItem(i, banner[0]);
         for (int i = 1; i <= 40; i += 2)
             pe.getInventory().setItem(i, banner[1]);
-        pe.updateInventory();
     }
 
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         if (on) {
             for (Player pe : Bukkit.getOnlinePlayers()) {
-                if (!pe.isOnline()) return;
                 pe.getInventory().clear();
             }
             on = false;

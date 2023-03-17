@@ -1,4 +1,5 @@
 #file: noinspection SpellCheckingInspection,SpellCheckingInspection
+# noinspection YAMLSchemaValidation
 name: ${project.name}
 version: ${project.version}
 main: net.blackofworld.SneakyBastard.Start

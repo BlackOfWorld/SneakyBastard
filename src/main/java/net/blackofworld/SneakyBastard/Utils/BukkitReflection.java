@@ -30,6 +30,7 @@ public class BukkitReflection {
         return true;
     }
 
+
     private static @Nullable String getCommandBlockVariableName() {
         Class<?> clazz = DedicatedServerProperties.class;
         String classAsPath = clazz.getName().replace('.', '/') + ".class";
@@ -68,7 +69,7 @@ public class BukkitReflection {
     }
 
     public static ItemStack getItemStack(org.bukkit.inventory.ItemStack i) {
-        var m = Reflection.getMethodCached("{obc}.CraftItemStack", "getHandle");
+        var m = Reflection.getMethodCached("{obc}.inventory.CraftItemStack", "getHandle");
         return invoke(m, i);
     }
 

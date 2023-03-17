@@ -4,10 +4,9 @@ import net.blackofworld.SneakyBastard.Command.CommandManager;
 import net.blackofworld.SneakyBastard.Listeners.SneakyListener;
 import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
 import net.blackofworld.SneakyBastard.Utils.BungeeUtils;
-import net.blackofworld.SneakyBastard.Utils.Packets.PacketInject;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInjector;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spigotmc.WatchdogThread;
@@ -22,7 +21,7 @@ public final class Start extends JavaPlugin {
     public static CommandManager cm;
     private final PluginDescriptionFile pdfFile = this.getDescription();
     private boolean isReload;
-
+    private PacketInjector injector;
 
     private void onPostWorldLoad() {
         cm = new CommandManager();
@@ -33,13 +32,6 @@ public final class Start extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage("§2" + StringUtils.repeat("-", loadString.length()));
         Bukkit.getConsoleSender().sendMessage("§3" + loadString);
         Bukkit.getConsoleSender().sendMessage("§2" + StringUtils.repeat("-", loadString.length()));
-        if (isReload) {
-            Bukkit.getScheduler().runTask(this, () -> {
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    PacketInject.getPlayer(p).hook();
-                }
-            });
-        }
 
     }
     
@@ -50,8 +42,13 @@ public final class Start extends JavaPlugin {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.toString());
         }
+        try {
+            injector = new PacketInjector(this);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.toString());
+        }
 
-        // Do every hooking here
+            // Do every hooking here
     }
 
     @Override
@@ -69,6 +66,7 @@ public final class Start extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage("§2" + StringUtils.repeat("-", unloadString.length()));
         Bukkit.getConsoleSender().sendMessage("§3" + unloadString);
         Bukkit.getConsoleSender().sendMessage("§2" + StringUtils.repeat("-", unloadString.length()));
+        injector.close();
         cm.Destroy();
     }
     public static final class Config {
