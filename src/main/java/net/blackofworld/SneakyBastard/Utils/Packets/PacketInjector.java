@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class PacketInjector extends LightInjector {
@@ -60,12 +59,11 @@ public class PacketInjector extends LightInjector {
     @Nullable
     @Override
     protected Object onPacketReceiveAsync(@Nullable Player sender, Channel channel, Object packet_) {
-        AtomicReference<Packet<?>> packet = new AtomicReference<>((Packet<?>) packet_);
-        PacketEvent event = new PacketEvent(packet.get(), sender, PacketType.INCOMING);
+        PacketEvent event = new PacketEvent((Packet<?>) packet_, sender, PacketType.INCOMING);
         for (PacketMap map : PacketInjector.PACKET_MAP) {
             if ((map.packetType().equals(PacketType.INCOMING))) {
                 try {
-                    packet.set((Packet<?>) map.m().invoke(map.listener(), event));
+                    map.m().invoke(map.listener(), event);
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }

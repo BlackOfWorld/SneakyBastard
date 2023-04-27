@@ -1,10 +1,11 @@
 #file: noinspection SpellCheckingInspection,SpellCheckingInspection
 # noinspection YAMLSchemaValidation
-name: ${project.name}
-version: ${project.version}
+name: $name
+version: $version
 main: net.blackofworld.SneakyBastard.Start
 load: STARTUP
-author: BlackOfWorld <3
+authors:
+  - BlackOfWorld <3
 description: SneakyBastard, a good angel.
-api-version: 1.17
+api-version: $apiVersion
 website: https://blackofworld.fun

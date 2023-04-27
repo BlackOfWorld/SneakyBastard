@@ -5,6 +5,7 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.dedicated.DedicatedServerProperties;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Code;
@@ -81,6 +82,12 @@ public class BukkitReflection {
         is.save(compound);
         return compound.getAsString();
 
+    }
+
+    public static Entity getEntity(org.bukkit.entity.Entity e) {
+
+        var m = Reflection.getMethodCached("{obc}.entity.CraftEntity", "getHandle");
+        return invoke(m, e);
     }
 
     public static ServerLevel getWorldLevel(World w) {

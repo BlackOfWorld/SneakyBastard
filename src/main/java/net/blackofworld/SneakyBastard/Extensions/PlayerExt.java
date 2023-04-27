@@ -3,6 +3,7 @@ package net.blackofworld.SneakyBastard.Extensions;
 import net.blackofworld.SneakyBastard.Command.CommandBase;
 import net.blackofworld.SneakyBastard.Command.CommandManager;
 import net.blackofworld.SneakyBastard.Commands.Help;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketInjector;
 import net.minecraft.network.protocol.Packet;
 import org.bukkit.entity.Player;
 
@@ -52,6 +53,8 @@ public final class PlayerExt {
     }
 
     public static void SendPacket(final @NotNull Player player, @NotNull Packet<?> packet) {
-        getServerPlayer(player).connection.send(packet);
+        // Instead of using getServerPlayer(player).connection.send(packet);
+        // we'll bypass it by using netty, this way we'll bypass any ACs that may hook
+        PacketInjector.Instance.sendPacket(player, packet);
     }
 }

@@ -199,9 +199,7 @@ public abstract class LightInjector {
     }
 
     /**
-     * Sends a packet over a {@link Channel}. Since the packet will be sent without any special treatment, this will invoke
-     * {@link #onPacketSendAsync(Player, Channel, Object) onPacketSendAsync} when the packet will be intercepted by the
-     * injector (any other packet injectors present on the sever will intercept and possibly cancel the packet as well).
+     * Sends a packet over a {@link Channel}.
      *
      * @param channel The {@link Channel} on which the packet will be sent.
      * @param packet The packet to send.
@@ -210,7 +208,8 @@ public abstract class LightInjector {
     public final void sendPacket(@NotNull Channel channel, @NotNull Object packet) {
         Objects.requireNonNull(channel, "Channel is null.");
         Objects.requireNonNull(packet, "Packet is null.");
-        channel.pipeline().writeAndFlush(packet);
+        channel.pipeline().context("packet_handler").writeAndFlush(packet);
+        //channel.pipeline().writeAndFlush(packet);
     }
 
     /**

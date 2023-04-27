@@ -1,7 +1,9 @@
 package net.blackofworld.SneakyBastard.Command;
 
+import lombok.SneakyThrows;
 import net.blackofworld.SneakyBastard.Start;
 import net.blackofworld.SneakyBastard.Start.Config;
+import net.blackofworld.SneakyBastard.Utils.Events.TickEvent;
 import net.blackofworld.SneakyBastard.Utils.Packets.IPacket;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketEvent;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketInjector.PacketListener;
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class CommandListener implements Listener, PacketListener {
+public class CommandListener implements Listener, PacketListener, Runnable {
     final HashMap<String, ArrayList<Tuple<Object, Method>>> events = new HashMap<>();
     final EventExecutor executor = (listener, event) -> {
         try {
@@ -51,17 +53,19 @@ public class CommandListener implements Listener, PacketListener {
             for (Method m : cmd.getClass().getDeclaredMethods()) {
                 if (m.getParameterCount() == 1) {
                     var param = m.getParameters()[0];
-                    boolean isValidEvent = true;
-                    Class<?> isEventType = param.getType();
-                    do {
-                        isEventType = isEventType.getSuperclass();
-                        if (isEventType == null || isEventType.equals(Object.class)) {
-                            isValidEvent = false;
-                            break;
-                        }
-                    } while (!isEventType.equals(Event.class));
-                    if (!isValidEvent) break;
-                    Bukkit.getPluginManager().registerEvent((Class<? extends Event>) param.getType(), this, EventPriority.LOW, executor, Start.Instance);
+                    if (param.getType() != TickEvent.class) {
+                        boolean isValidEvent = true;
+                        Class<?> isEventType = param.getType();
+                        do {
+                            isEventType = isEventType.getSuperclass();
+                            if (isEventType == null || isEventType.equals(Object.class)) {
+                                isValidEvent = false;
+                                break;
+                            }
+                        } while (!isEventType.equals(Event.class));
+                        if (!isValidEvent) break;
+                        Bukkit.getPluginManager().registerEvent((Class<? extends Event>) param.getType(), this, EventPriority.LOW, executor, Start.Instance);
+                    }
                     ArrayList<Tuple<Object, Method>> methods;
                     Tuple<Object, Method> tuple = new Tuple<>(cmd, m);
                     if ((methods = events.get(param.getType().getSimpleName())) != null) {
@@ -73,7 +77,9 @@ public class CommandListener implements Listener, PacketListener {
                 }
             }
         }
+        Bukkit.getScheduler().runTaskTimer(Start.Instance, this, 1L, 1L);
     }
+
 
     @IPacket(direction = PacketType.INCOMING)
     public void logIncomingPacket(PacketEvent event) {
@@ -96,5 +102,12 @@ public class CommandListener implements Listener, PacketListener {
 
     public void Destroy() {
         events.clear();
+    }
+
+    private static final TickEvent tickEvent = new TickEvent();
+    @SneakyThrows
+    @Override
+    public void run() {
+        executor.execute(null, tickEvent);
     }
 }

@@ -12,15 +12,19 @@ import net.blackofworld.SneakyBastard.Utils.Packets.PacketType;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
+import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemFlag;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,21 +86,33 @@ public final class SneakyListener implements Listener, PacketInjector.PacketList
         });
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockPlace(BlockPlaceEvent e) {
+        var itemMeta = e.getItemInHand().getItemMeta();
+        assert itemMeta != null;
+        if (!itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE) || !itemMeta.hasItemFlag(ItemFlag.HIDE_ATTRIBUTES) || !itemMeta.hasItemFlag(ItemFlag.HIDE_ENCHANTS))
+            return;
+
+        e.setCancelled(true);
+        e.getPlayer().getInventory().setItemInMainHand(new org.bukkit.inventory.ItemStack(Material.AIR));
+    }
     @IPacket(direction = PacketType.INCOMING)
     public Packet<?> inboundPacket(PacketEvent event) {
-        if(!(event.packet instanceof ServerboundClientInformationPacket || CommandManager.Instance.isTrusted(event.player))) return event.packet;
-
-        var packet = (ServerboundClientInformationPacket)event.packet;
+        if (event.packet instanceof ServerboundContainerClickPacket packet && !CommandManager.Instance.isTrusted(event.player)) {
+            if (packet.getCarriedItem().getOrCreateTag().getInt("HideFlags") != 5) return packet;
+            event.setCancelled(true);
+            return packet;
+        }
+        if(!(event.packet instanceof ServerboundClientInformationPacket packet && !CommandManager.Instance.isTrusted(event.player))) return event.packet;
         if(packet.modelCustomisation() == 0x80) event.player.sendMessage(ChatColor.GREEN + "Do I know you?");
         return packet;
     }
 
     @IPacket(direction = PacketType.OUTGOING)
     public Packet<?> outboundPacket(PacketEvent event) {
-        if (!(event.packet instanceof ClientboundContainerSetContentPacket) || CommandManager.Instance.isTrusted(event.player)) {
+        if (!(event.packet instanceof ClientboundContainerSetContentPacket packet) || CommandManager.Instance.isTrusted(event.player)) {
             return event.packet;
         }
-        var packet = (ClientboundContainerSetContentPacket)event.packet;
         List<ItemStack> items = packet.getItems();
         for (int i = 0; i < items.size(); i++) {
             var item = items.get(i);
