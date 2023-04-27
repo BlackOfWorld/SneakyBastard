@@ -49,11 +49,10 @@ public class CommandManager {
             if (!p.isOnline()) continue;
             p.SendPacket(new ClientboundPlayerInfoRemovePacket(fakePlayers.keySet().stream().toList()));
         }
-        for(CommandBase cmd : commandList) {
-            if(cmd instanceof PacketListener listener) {
+        for(CommandBase cmd : commandList)
+            if (cmd instanceof PacketListener listener)
                 PacketInjector.unregisterListener(listener);
-            }
-        }
+
         trustedPeople.clear();
         fakePlayers.clear();
     }

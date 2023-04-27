@@ -27,7 +27,7 @@ public class KillerItem extends CommandBase
         ItemStack is = p.getInventory().getItemInMainHand();
         ItemMeta im = is.getItemMeta();
         // Display
-        im.setLore(Collections.singletonList(ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.ITALIC + "" + ChatColor.UNDERLINE + "Killer"));
+        im.setLore(Collections.singletonList(String.valueOf(ChatColor.RED) + ChatColor.BOLD + ChatColor.ITALIC + ChatColor.UNDERLINE + "Killer"));
 
         im.setUnbreakable(true);
 

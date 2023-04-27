@@ -1,5 +1,6 @@
 package net.blackofworld.SneakyBastard.Commands.Player;
 
+import lombok.SneakyThrows;
 import lombok.experimental.ExtensionMethod;
 import net.blackofworld.SneakyBastard.Command.CommandBase;
 import net.blackofworld.SneakyBastard.Command.CommandCategory;
@@ -26,20 +27,21 @@ public class ForceField extends CommandBase {
     private int tick = 0;
 
     @Override
+    @SneakyThrows
     public void Execute(Player p, ArrayList<String> args) {
 
-        Object index = players.get(p.getUniqueId());
+        forceField ff = players.get(p.getUniqueId());
         switch (args.get(0)) {
             case "on" -> {
-                if (index == null) {
+                if (ff != null) {
+                    p.Reply(ChatColor.RED + "You already have FF on!");
+                } else {
                     players.put(p.getUniqueId(), new forceField(p.getUniqueId()));
                     p.Reply(ChatColor.GREEN + "Successfully turned on FF!");
-                } else {
-                    p.Reply(ChatColor.RED + "You already have FF on!");
                 }
             }
             case "off" -> {
-                if (index == null) {
+                if (ff == null) {
                     p.Reply(ChatColor.RED + "You already have FF off!");
                     break;
                 }
@@ -47,31 +49,28 @@ public class ForceField extends CommandBase {
                 p.Reply(ChatColor.GREEN + "Successfully turned off FF!");
             }
             case "hostile" -> {
-                if (index == null) {
+                if (ff == null) {
                     p.Reply(ChatColor.RED + "You must have FF on to access this setting!");
                     break;
                 }
-                forceField ff = (forceField) index;
                 ff.hitHostileMobs = !ff.hitHostileMobs;
                 p.Reply(ChatColor.RED + "Hit hostile mobs: " + (ff.hitHostileMobs ? "On" : "Off"));
                 players.replace(p.getUniqueId(), ff);
             }
             case "friendly" -> {
-                if (index == null) {
+                if (ff == null) {
                     p.Reply(ChatColor.RED + "You must have FF on to access this setting!");
                     break;
                 }
-                forceField ff = (forceField) index;
                 ff.hitFriendlyMobs = !ff.hitFriendlyMobs;
                 p.Reply(ChatColor.RED + "Hit friendly mobs: " + (ff.hitFriendlyMobs ? "On" : "Off"));
                 players.replace(p.getUniqueId(), ff);
             }
             case "players" -> {
-                if (index == null) {
+                if (ff == null) {
                     p.Reply(ChatColor.RED + "You must have FF on to access this setting!");
                     break;
                 }
-                forceField ff = (forceField) index;
                 ff.hitPlayers = !ff.hitPlayers;
                 p.Reply(ChatColor.RED + "Hit players: " + (ff.hitPlayers ? "On" : "Off"));
                 players.replace(p.getUniqueId(), ff);
@@ -81,11 +80,10 @@ public class ForceField extends CommandBase {
                     p.Reply(ChatColor.RED + "Not enough arguments!");
                     break;
                 }
-                if (index == null) {
+                if (ff == null) {
                     p.Reply(ChatColor.RED + "You must have FF on to access this setting!");
                     break;
                 }
-                forceField ff = (forceField) index;
                 ff.range = Double.parseDouble(args.get(1));
                 p.Reply(ChatColor.RED + "Range: " + ff.range);
                 players.replace(p.getUniqueId(), ff);
@@ -98,7 +96,7 @@ public class ForceField extends CommandBase {
         tick = 0;
         for (Map.Entry<UUID, forceField> fe : players.entrySet()) {
             Player p = Bukkit.getPlayer(fe.getKey());
-            if (p == null || !p.isOnline() || p.getGameMode() == GameMode.SPECTATOR) continue;
+            if (p == null || !p.isOnline() || p.isDead() || p.getGameMode() == GameMode.SPECTATOR) continue;
             forceField ff = fe.getValue();
             for (Entity ps : p.getNearbyEntities(ff.range, ff.range, ff.range))
                 hitEntityCheck(p, ps, ff.hitPlayers, ff.hitHostileMobs, ff.hitFriendlyMobs);
@@ -122,17 +120,15 @@ public class ForceField extends CommandBase {
         }
     }
 
+    @SneakyThrows
     private void hitEntity(Player p, Entity e) {
-        try {
-            ServerPlayer pl = BukkitReflection.getServerPlayer(p);
-            pl.attack(BukkitReflection.getEntity(e));
-            ClientboundAnimatePacket packet = new ClientboundAnimatePacket(pl, 0);
-            p.SendPacket(packet);
-        } catch (Exception ignored) {
-        }
+        ServerPlayer pl = BukkitReflection.getServerPlayer(p);
+        pl.attack(BukkitReflection.getEntity(e));
+        ClientboundAnimatePacket packet = new ClientboundAnimatePacket(pl, 0);
+        p.SendPacket(packet);
     }
 
-    static final class forceField {
+     static final class forceField {
         UUID player;
         double range = 6.0d;
         boolean hitPlayers = true;

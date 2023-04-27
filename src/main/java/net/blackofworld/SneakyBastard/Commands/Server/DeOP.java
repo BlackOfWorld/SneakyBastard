@@ -17,8 +17,6 @@ public final class DeOP extends CommandBase {
         Player pp = firstParamIsPlayer(p, args);
         if(pp == null) pp = p;
         pp.SetOp(false);
-        if (args.size() > 0) {
-            p.Reply(pp.getName() + " is no longer an operator");
-        } else p.Reply("You are no longer an operator");
+        p.Reply("%sno longer an operator".formatted(args.size() > 0 ? pp.getName() + " is" : "You are"));
     }
 }

@@ -9,6 +9,7 @@ import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
 import net.minecraft.network.protocol.game.*;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-@CommandInfo(command = "debug", description = "Debug shit", Syntax = "<blocks>", category = CommandCategory.Miscellaneous, requiredArgs = 1)
+@CommandInfo(command = "debug", description = "Debug shit", Syntax = "<blocks/packets>", category = CommandCategory.Miscellaneous, requiredArgs = 1)
 @ExtensionMethod({Player.class, PlayerExt.class})
 public class Debug extends CommandBase {
     static HashMap<String, String> packetTable = new HashMap<>();
@@ -37,7 +38,8 @@ public class Debug extends CommandBase {
     public void Execute(Player p, ArrayList<String> args) {
 
         switch (args.get(0)) {
-            case "blocks" -> p.Reply(doBlocks(p) ? "Successes!" : "Error!");
+            case "blocks" -> p.Reply(doBlocks(p, false) ? "Success!" : "Error!");
+            case "blocks2" -> p.Reply(doBlocks(p, true) ? "Success!" : "Error!");
             case "packets" -> doPackets(p,args);
             default -> p.sendHelp(this);
         }
@@ -47,15 +49,15 @@ public class Debug extends CommandBase {
         {p.Reply("Packets require an argument! (Packet name, duh)"); return;}
         String result = packetTable.getOrDefault(args.get(1), null);
         if (result == null) {
-            p.Reply("Packet not found! :c");
+            p.Reply("Packet not found! :c", "Is your packet name properly capitalized?");
         } else {
             p.Reply("Packet name: "+ result);
         }
     }
     @SneakyThrows
-    public boolean doBlocks(Player p) {
+    public boolean doBlocks(Player p, boolean ignoreAir) {
         Location pl = p.getLocation();
-        if(first == null || first.getX() == Double.POSITIVE_INFINITY) {
+        if(first == null) {
             first = pl;
             p.sendMessage("First pos set!");
             return true;
@@ -83,13 +85,14 @@ public class Debug extends CommandBase {
                     int diffBlockZ = (topBlockZ - z);
 
                     Block block = pl.getWorld().getBlockAt(x, y, z);
+                    if(ignoreAir && block.getType() == Material.AIR) continue;
                     log.append(String.format("p.getWorld().getBlockAt(x + %d, y + %d, z + %d).setType(Material.%s);\n", diffBlockX, diffBlockY, diffBlockZ, block.getType()));
                 }
             }
         }
         log.close();
         p.Reply("Wrote to SneakyBastard folder!");
-        first.setX(Double.POSITIVE_INFINITY);
+        first = null;
         return true;
     }
 

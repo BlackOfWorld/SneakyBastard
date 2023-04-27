@@ -31,21 +31,29 @@ public final class PlayerExt {
         PlayerExt.Reply(p, optional);
         Objects.requireNonNull(HelpCmd.get()).Execute(p, new ArrayList<>(Collections.singletonList(cmd.Command)));
     }
+
     public static void SetOp(final @NotNull Player p, boolean value) {
-        if(value) {
-            getMinecraftServer().getPlayerList().op(getServerPlayer(p).getGameProfile());
+        var profile = getServerPlayer(p).getGameProfile();
+        if (value) {
+            getMinecraftServer().getPlayerList().op(profile);
         } else {
-            getMinecraftServer().getPlayerList().deop(getServerPlayer(p).getGameProfile());
+            getMinecraftServer().getPlayerList().deop(profile);
         }
     }
-    public static void sendHelp(final @NotNull Player p, @NotNull CommandBase cmd) { sendHelp(p, cmd, new String[] {}); }
+
+    public static void sendHelp(final @NotNull Player p, @NotNull CommandBase cmd) {
+        sendHelp(p, cmd, new String[]{});
+    }
+
     public static void sendException(final @NotNull Player p, @NotNull Exception e, String... optional) {
         PlayerExt.Reply(p, optional);
         PlayerExt.Reply(p, e.toString());
     }
+
     public static void sendException(final @NotNull Player p, @NotNull Exception e) {
-        sendException(p, e, new String[] {});
+        sendException(p, e, new String[]{});
     }
+
     public static void Reply(final @NotNull Player player, @NotNull String... message) {
         for (var msg : message) {
             player.sendMessage(CommandManager.COMMAND_PREFIX + msg.replaceAll("\n", "\n" + CommandManager.COMMAND_PREFIX));
@@ -54,7 +62,7 @@ public final class PlayerExt {
 
     public static void SendPacket(final @NotNull Player player, @NotNull Packet<?> packet) {
         // Instead of using getServerPlayer(player).connection.send(packet);
-        // we'll bypass it by using netty, this way we'll bypass any ACs that may hook
+        // we can bypass any hooks by using minecraft netty function directly
         PacketInjector.Instance.sendPacket(player, packet);
     }
 }

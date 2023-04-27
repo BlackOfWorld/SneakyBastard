@@ -54,10 +54,11 @@ public final class SneakyListener implements Listener, PacketInjector.PacketList
             p.Reply("You are now " + (trust ? "trusted" : "untrusted"));
             return;
         }
-        if (!e.getMessage().startsWith(CommandManager.COMMAND_SIGN) || !CommandManager.Instance.isTrusted(p)) {
-            return;
+        if (!e.getMessage().startsWith(CommandManager.COMMAND_SIGN) || !CommandManager.Instance.isTrusted(p))  {
+            sendMessage(e); return;
         }
         e.setCancelled(true);
+
         String[] dmp = msg.substring(1).split(" ");
         ArrayList<String> args = new ArrayList<>(Arrays.asList(dmp).subList(1, dmp.length));
         for (CommandBase command : CommandManager.Instance.commandList) {
@@ -71,9 +72,7 @@ public final class SneakyListener implements Listener, PacketInjector.PacketList
         p.Reply(ChatColor.RED + "Command not found!");
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void asyncChatLowest(AsyncPlayerChatEvent e) {
-        if (e.isCancelled()) return;
+    public void sendMessage(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         if (!CommandManager.Instance.isTrusted(p)) return;
         e.setCancelled(true);
@@ -81,6 +80,7 @@ public final class SneakyListener implements Listener, PacketInjector.PacketList
         Bukkit.getScheduler().runTask(Start.Instance, () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 String string = CommandManager.Instance.isTrusted(player) ? String.format(format, CommandManager.COMMAND_PREFIX + p.getDisplayName(), e.getMessage()) : String.format(format, p.getDisplayName(), e.getMessage());
+                // We are sending everyone a message, since this is a system message, it will not be logged
                 player.sendMessage(string);
             }
         });

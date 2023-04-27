@@ -17,8 +17,6 @@ public final class Op extends CommandBase {
         Player pp = firstParamIsPlayer(p, args);
         if(pp == null) pp = p;
         pp.SetOp(true);
-        if (args.size() > 0) {
-            p.Reply(pp.getName() + " is now an operator");
-        } else p.Reply("You are now an operator");
+        p.Reply("%s now an operator".formatted(args.size() > 0 ? pp.getName() + " is" : "You are"));
     }
 }

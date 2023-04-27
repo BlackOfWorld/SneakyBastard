@@ -12,10 +12,9 @@ import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.util.Tuple;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
-import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.EventExecutor;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,28 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class CommandListener implements Listener, PacketListener, Runnable {
+    private static final TickEvent tickEvent = new TickEvent();
     final HashMap<String, ArrayList<Tuple<Object, Method>>> events = new HashMap<>();
-    final EventExecutor executor = (listener, event) -> {
-        try {
-            Class<?> clazz = event.getClass();
-            do {
-                ArrayList<Tuple<Object, Method>> methods;
-                if ((methods = events.get(clazz.getSimpleName())) != null) {
-                    methods.forEach((method -> {
-                        try {
-                            method.getB().invoke(method.getA(), event);
-                        } catch (IllegalAccessException | InvocationTargetException ignored) {
-                        }
-                    }));
-                    return;
-                } else {
-                    clazz = clazz.getSuperclass();
-                }
-            } while (clazz != Object.class);
-        } catch (Throwable var5) {
-            throw new EventException(var5);
-        }
-    };
 
     @SuppressWarnings("unchecked")
     CommandListener() {
@@ -64,7 +43,7 @@ public class CommandListener implements Listener, PacketListener, Runnable {
                             }
                         } while (!isEventType.equals(Event.class));
                         if (!isValidEvent) break;
-                        Bukkit.getPluginManager().registerEvent((Class<? extends Event>) param.getType(), this, EventPriority.LOW, executor, Start.Instance);
+                        Bukkit.getPluginManager().registerEvent((Class<? extends Event>) param.getType(), this, EventPriority.LOW, this::execute, Start.Instance);
                     }
                     ArrayList<Tuple<Object, Method>> methods;
                     Tuple<Object, Method> tuple = new Tuple<>(cmd, m);
@@ -79,7 +58,6 @@ public class CommandListener implements Listener, PacketListener, Runnable {
         }
         Bukkit.getScheduler().runTaskTimer(Start.Instance, this, 1L, 1L);
     }
-
 
     @IPacket(direction = PacketType.INCOMING)
     public void logIncomingPacket(PacketEvent event) {
@@ -104,10 +82,25 @@ public class CommandListener implements Listener, PacketListener, Runnable {
         events.clear();
     }
 
-    private static final TickEvent tickEvent = new TickEvent();
     @SneakyThrows
     @Override
     public void run() {
-        executor.execute(null, tickEvent);
+        execute(null, tickEvent);
+    }
+
+    @SneakyThrows
+    private void execute(@NotNull Listener listener, @NotNull Event event) {
+        Class<?> clazz = event.getClass();
+        do {
+            ArrayList<Tuple<Object, Method>> methods;
+            if ((methods = events.get(clazz.getSimpleName())) == null) {
+                clazz = clazz.getSuperclass();
+                continue;
+            }
+            methods.forEach(method -> {
+                try {method.getB().invoke(method.getA(), event);} catch (IllegalAccessException | InvocationTargetException e) {}
+            });
+            return;
+        } while (clazz != Object.class);
     }
 }

@@ -23,6 +23,7 @@ public class Enchant extends CommandBase {
     private void addEnchantment(final Player p, ItemStack stack, final Enchantment enchantment, final int level) {
         if (enchantment == null) {
             p.Reply(ChatColor.RED + "Enchantment cannot be null!");
+            return;
         }
         try {
             if (stack.getType().equals(Material.ENCHANTED_BOOK)) {
@@ -47,7 +48,7 @@ public class Enchant extends CommandBase {
         short level;
         try {
             level = Short.parseShort(args.get(1));
-            if(level > 255 && level < 0) throw new ArithmeticException();
+            if(level < 0 || level > 255) throw new ArithmeticException();
         } catch (Exception e) {
             p.Reply(ChatColor.RED + "Level must be a number in range 0 - 255!");
             return;

