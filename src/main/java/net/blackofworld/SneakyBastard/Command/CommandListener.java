@@ -32,6 +32,7 @@ public class CommandListener implements Listener, PacketListener, Runnable {
             for (Method m : cmd.getClass().getDeclaredMethods()) {
                 if (m.getParameterCount() == 1) {
                     var param = m.getParameters()[0];
+                    if(param.getType() == PacketEvent.class) continue;
                     if (param.getType() != TickEvent.class) {
                         boolean isValidEvent = true;
                         Class<?> isEventType = param.getType();
@@ -82,9 +83,11 @@ public class CommandListener implements Listener, PacketListener, Runnable {
         events.clear();
     }
 
+    private short tickCount = 0;
     @SneakyThrows
     @Override
     public void run() {
+        tickEvent.tick = tickCount++;
         execute(null, tickEvent);
     }
 

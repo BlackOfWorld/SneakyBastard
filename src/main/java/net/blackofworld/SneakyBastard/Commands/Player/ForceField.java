@@ -24,7 +24,6 @@ import java.util.UUID;
 @ExtensionMethod({Player.class, PlayerExt.class})
 public class ForceField extends CommandBase {
     private final HashMap<UUID, forceField> players = new HashMap<>();
-    private int tick = 0;
 
     @Override
     @SneakyThrows
@@ -92,8 +91,8 @@ public class ForceField extends CommandBase {
     }
 
     public void onTick(TickEvent e) {
-        if (tick++ < 5) return;
-        tick = 0;
+        // 15 cps lol
+        if (e.tick % 5 != 0) return;
         for (Map.Entry<UUID, forceField> fe : players.entrySet()) {
             Player p = Bukkit.getPlayer(fe.getKey());
             if (p == null || !p.isOnline() || p.isDead() || p.getGameMode() == GameMode.SPECTATOR) continue;
