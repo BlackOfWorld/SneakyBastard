@@ -11,7 +11,6 @@ import net.blackofworld.SneakyBastard.Utils.Packets.PacketInjector;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketType;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
@@ -96,19 +95,17 @@ public final class SneakyListener implements Listener, PacketInjector.PacketList
         e.setCancelled(true);
         e.getPlayer().getInventory().setItemInMainHand(new org.bukkit.inventory.ItemStack(Material.AIR));
     }
-    @IPacket(direction = PacketType.INCOMING)
+    @IPacket(direction = PacketType.Serverbound)
     public Packet<?> inboundPacket(PacketEvent event) {
         if (event.packet instanceof ServerboundContainerClickPacket packet && !CommandManager.Instance.isTrusted(event.player)) {
             if (packet.getCarriedItem().getOrCreateTag().getInt("HideFlags") != 5) return packet;
             event.setCancelled(true);
             return packet;
         }
-        if(!(event.packet instanceof ServerboundClientInformationPacket packet && !CommandManager.Instance.isTrusted(event.player))) return event.packet;
-        if(packet.modelCustomisation() == 0x80) event.player.sendMessage(ChatColor.GREEN + "Do I know you?");
-        return packet;
+        return event.packet;
     }
 
-    @IPacket(direction = PacketType.OUTGOING)
+    @IPacket(direction = PacketType.Clientbound)
     public Packet<?> outboundPacket(PacketEvent event) {
         if (!(event.packet instanceof ClientboundContainerSetContentPacket packet) || CommandManager.Instance.isTrusted(event.player)) {
             return event.packet;

@@ -60,7 +60,7 @@ public class CommandListener implements Listener, PacketListener, Runnable {
         Bukkit.getScheduler().runTaskTimer(Start.Instance, this, 1L, 1L);
     }
 
-    @IPacket(direction = PacketType.INCOMING)
+    @IPacket(direction = PacketType.Serverbound)
     public void logIncomingPacket(PacketEvent event) {
         if (!Config.LogPackets) return;
         var packet = event.packet;
@@ -70,7 +70,7 @@ public class CommandListener implements Listener, PacketListener, Runnable {
         Bukkit.getScheduler().runTask(Start.Instance, () -> Bukkit.broadcastMessage(packet.toString()));
     }
 
-    @IPacket(direction = PacketType.OUTGOING)
+    @IPacket(direction = PacketType.Clientbound)
     public void logOutboundPacket(PacketEvent event) {
         if (!Config.LogPackets) return;
         var packet = event.packet;

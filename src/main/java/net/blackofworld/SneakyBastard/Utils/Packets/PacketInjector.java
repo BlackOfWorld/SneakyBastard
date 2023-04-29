@@ -59,9 +59,9 @@ public class PacketInjector extends LightInjector {
     @Nullable
     @Override
     protected Object onPacketReceiveAsync(@Nullable Player sender, Channel channel, Object packet_) {
-        PacketEvent event = new PacketEvent((Packet<?>) packet_, sender, PacketType.INCOMING);
+        PacketEvent event = new PacketEvent((Packet<?>) packet_, sender, PacketType.Serverbound);
         for (PacketMap map : PacketInjector.PACKET_MAP) {
-            if ((map.packetType().equals(PacketType.INCOMING))) {
+            if ((map.packetType().equals(PacketType.Serverbound))) {
                 try {
                     map.m().invoke(map.listener(), event);
                 } catch (InvocationTargetException | IllegalAccessException e) {
@@ -75,8 +75,8 @@ public class PacketInjector extends LightInjector {
     @Nullable
     @Override
     protected Object onPacketSendAsync(@Nullable Player receiver, Channel channel, Object packet) {
-        PacketEvent event = new PacketEvent((Packet<?>) packet, receiver, PacketType.OUTGOING);
-        PacketInjector.PACKET_MAP.stream().filter((map) -> (map.packetType().equals(PacketType.OUTGOING))).forEachOrdered((map) -> {
+        PacketEvent event = new PacketEvent((Packet<?>) packet, receiver, PacketType.Clientbound);
+        PacketInjector.PACKET_MAP.stream().filter((map) -> (map.packetType().equals(PacketType.Clientbound))).forEachOrdered((map) -> {
             try {
                 map.m().invoke(map.listener(), event);
             } catch (InvocationTargetException | IllegalAccessException e) {

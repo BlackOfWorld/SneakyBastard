@@ -12,25 +12,25 @@ import net.blackofworld.SneakyBastard.Utils.Events.TickEvent;
 import net.blackofworld.SneakyBastard.Utils.Packets.IPacket;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketEvent;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketInjector;
+import net.blackofworld.SneakyBastard.Utils.Packets.PacketType;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import oshi.util.tuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.Queue;
-
-import static net.blackofworld.SneakyBastard.Utils.Packets.PacketType.INCOMING;
-import static net.blackofworld.SneakyBastard.Utils.Packets.PacketType.OUTGOING;
 
 @CommandInfo(command = "fakelag", description = "Fakes server lag.", Syntax = "", category = CommandCategory.Server)
 @ExtensionMethod({Player.class, PlayerExt.class})
 public class FakeLag extends CommandBase implements PacketInjector.PacketListener {
 
-    EvictingQueue<PacketEvent> sync = EvictingQueue.create(50000); // seems reasonable?
-    Queue<PacketEvent> packets = Queues.synchronizedQueue(sync);
+    EvictingQueue<Triplet<Player, Packet<?>, PacketType>> sync = EvictingQueue.create(50_000); // seems reasonable?
+    Queue<Triplet<Player, Packet<?>, PacketType>> packets = Queues.synchronizedQueue(sync); // very ugly, i know
     public FakeLag() {PacketInjector.registerListener(this);}
     boolean isOn = false;
-    boolean doCleanup = false;
+    int doCleanup = 0;
     @Override
     public void Execute(Player p, ArrayList<String> args) {
         p.Reply("FakeLag is now " + (!isOn ? "on!" : "off!"));
@@ -38,7 +38,7 @@ public class FakeLag extends CommandBase implements PacketInjector.PacketListene
         // Make sure the chat packet arrives... lol
         if(isOn) {
             isOn = false;
-            doCleanup = true;
+            doCleanup = 1;
         } else {
             Bukkit.getScheduler().runTaskLater(Start.Instance, () -> {
                 isOn = true;
@@ -48,32 +48,38 @@ public class FakeLag extends CommandBase implements PacketInjector.PacketListene
 
 
     public void onTick(TickEvent event) {
-        // every 3 ticks, bit AND for performance reason
-        if (!doCleanup || (event.tick & 0x2) == 2) return;
+        // every 2 ticks, bit AND for performance reason,
+        if((event.tick & 0x8) == 8 && sync.remainingCapacity() < 200) doCleanup = 2;
+        if (doCleanup == 0 && (isOn || (event.tick & 0x2) == 2)) return;
 
         int packetCount = 0;
-        PacketEvent pe;
+
+        Triplet<Player, Packet<?>, PacketType> pe;
         while((pe = sync.poll()) != null) {
             if (packetCount++ > 5000) continue;
-            if (pe.Direction == INCOMING) PacketInjector.Instance.receivePacket(pe.player, pe.packet);
-            if (pe.Direction == OUTGOING) PacketInjector.Instance.sendPacket(pe.player, pe.packet);
+            switch (pe.getC()) {
+                case Serverbound -> PacketInjector.Instance.receivePacket(pe.getA(), pe.getB());
+                case Clientbound -> PacketInjector.Instance.sendPacket(pe.getA(), pe.getB());
+            }
         }
-        doCleanup = false;
+        doCleanup = 0;
     }
-    @IPacket(direction = INCOMING)
+    @IPacket(direction = PacketType.Serverbound)
     public void inboundPacket(PacketEvent event) {
         if (!isOn || event.packet.getClass() == ServerboundKeepAlivePacket.class || event.packet.getClass() == ServerboundChatPacket.class || event.packet.getClass() == ServerboundChatAckPacket.class) {
             return;
         }
+
         event.setCancelled(true);
-        packets.add(event);
+        packets.add(new Triplet<>(event.player, event.packet, event.Direction));
     }
-    @IPacket(direction = OUTGOING)
+    @IPacket(direction = PacketType.Clientbound)
     public void outboundPacket(PacketEvent event) {
         if (!isOn || event.packet.getClass() == ClientboundKeepAlivePacket.class || event.packet.getClass() == ClientboundPlayerChatPacket.class || event.packet.getClass() == ClientboundSystemChatPacket.class) {
             return;
         }
+
         event.setCancelled(true);
-        packets.add(event);
+        packets.add(new Triplet<>(event.player, event.packet, event.Direction));
     }
 }
