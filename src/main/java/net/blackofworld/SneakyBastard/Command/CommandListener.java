@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.util.Tuple;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +45,14 @@ public class CommandListener implements Listener, PacketListener, Runnable {
                             }
                         } while (!isEventType.equals(Event.class));
                         if (!isValidEvent) break;
-                        Bukkit.getPluginManager().registerEvent((Class<? extends Event>) param.getType(), this, EventPriority.LOW, this::execute, Start.Instance);
+                        EventHandler handler = m.getAnnotation(EventHandler.class);
+                        boolean ignoreCanceled = false;
+                        EventPriority priority = EventPriority.NORMAL;
+                        if(handler != null) {
+                            ignoreCanceled = handler.ignoreCancelled();
+                            priority = handler.priority();
+                        }
+                        Bukkit.getPluginManager().registerEvent((Class<? extends Event>) param.getType(), this, priority, this::execute, Start.Instance, ignoreCanceled);
                     }
                     ArrayList<Tuple<Object, Method>> methods;
                     Tuple<Object, Method> tuple = new Tuple<>(cmd, m);
