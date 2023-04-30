@@ -22,6 +22,7 @@
 
 package net.blackofworld.SneakyBastard.Utils.Packets;
 
+import com.google.common.base.MoreObjects;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.*;
 import lombok.Validate.NotNull;
@@ -208,7 +209,9 @@ public abstract class LightInjector {
     public final void sendPacket(@NotNull Channel channel, @NotNull Object packet) {
         Objects.requireNonNull(channel, "Channel is null.");
         Objects.requireNonNull(packet, "Packet is null.");
-        channel.pipeline().context("packet_handler").writeAndFlush(packet);
+
+        // sometimes, when the server is shutting down, the context disappears way too soon, fallback to normal pipeline...
+        MoreObjects.firstNonNull(channel.pipeline().context("packet_handler"), channel.pipeline()).writeAndFlush(packet);
         //channel.pipeline().writeAndFlush(packet);
     }
 
