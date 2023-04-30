@@ -8,6 +8,7 @@ import net.blackofworld.SneakyBastard.Command.CommandCategory;
 import net.blackofworld.SneakyBastard.Command.CommandInfo;
 import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
 import net.blackofworld.SneakyBastard.Start;
+import net.blackofworld.SneakyBastard.Utils.BukkitReflection;
 import net.blackofworld.SneakyBastard.Utils.Events.TickEvent;
 import net.blackofworld.SneakyBastard.Utils.Packets.IPacket;
 import net.blackofworld.SneakyBastard.Utils.Packets.PacketEvent;
@@ -50,19 +51,23 @@ public class FakeLag extends CommandBase implements PacketInjector.PacketListene
     public void onTick(TickEvent event) {
         // every 2 ticks, bit AND for performance reason,
         if((event.tick & 0x8) == 8 && sync.remainingCapacity() < 200) doCleanup = 2;
-        if (doCleanup == 0 && (isOn || (event.tick & 0x2) == 2)) return;
+        if (doCleanup == 0 || ((event.tick & 0x2) != 2)) return;
 
         int packetCount = 0;
 
         Triplet<Player, Packet<?>, PacketType> pe;
-        while((pe = sync.poll()) != null) {
+        while ((pe = sync.poll()) != null) {
             if (packetCount++ > 5000) continue;
             switch (pe.getC()) {
                 case Serverbound -> PacketInjector.Instance.receivePacket(pe.getA(), pe.getB());
                 case Clientbound -> PacketInjector.Instance.sendPacket(pe.getA(), pe.getB());
             }
         }
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            BukkitReflection.refreshPlayer(p);
+        }
         doCleanup = 0;
+
     }
     @IPacket(direction = PacketType.Serverbound)
     public void inboundPacket(PacketEvent event) {
