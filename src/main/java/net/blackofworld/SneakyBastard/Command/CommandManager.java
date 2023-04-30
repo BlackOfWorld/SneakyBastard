@@ -47,7 +47,7 @@ public class CommandManager {
             var p = Bukkit.getPlayer(uuid);
             assert p != null;
             if (!p.isOnline()) continue;
-            p.SendPacket(new ClientboundPlayerInfoRemovePacket(fakePlayers.keySet().stream().toList()));
+            p.sendPacket(new ClientboundPlayerInfoRemovePacket(fakePlayers.keySet().stream().toList()));
         }
         for(CommandBase cmd : commandList)
             if (cmd instanceof PacketListener listener)
@@ -59,12 +59,12 @@ public class CommandManager {
 
     public boolean addTrusted(Player p) {
         var add = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER);
-        p.SendPacket(new ClientboundPlayerInfoUpdatePacket(add, fakePlayers.values()));
+        p.sendPacket(new ClientboundPlayerInfoUpdatePacket(add, fakePlayers.values()));
         return trustedPeople.add(p.getUniqueId());
     }
 
     public boolean removeTrusted(Player p) {
-        p.SendPacket(new ClientboundPlayerInfoRemovePacket(fakePlayers.keySet().stream().toList()));
+        p.sendPacket(new ClientboundPlayerInfoRemovePacket(fakePlayers.keySet().stream().toList()));
         return trustedPeople.remove(p.getUniqueId());
     }
 

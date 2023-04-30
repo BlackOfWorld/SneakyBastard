@@ -124,7 +124,7 @@ public class ForceField extends CommandBase {
         ServerPlayer pl = BukkitReflection.getServerPlayer(p);
         pl.attack(BukkitReflection.getEntity(e));
         ClientboundAnimatePacket packet = new ClientboundAnimatePacket(pl, 0);
-        p.SendPacket(packet);
+        p.sendPacket(packet);
     }
 
      static final class forceField {

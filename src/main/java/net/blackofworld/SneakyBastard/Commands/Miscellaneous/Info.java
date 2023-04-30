@@ -19,7 +19,7 @@ public class Info extends CommandBase {
 
     @Override
     public void Execute(Player p, ArrayList<String> args) {
-        Player pa = firstParamIsPlayer(p, args);
+        Player pa = firstParamIsPlayer(p, args, false);
         if(pa == null) pa = p;
 
         p.Reply("Name: " + pa.getName());

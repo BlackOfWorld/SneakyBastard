@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public abstract class CommandBase {
     public final String Command = getInfo().command();
@@ -29,12 +30,15 @@ public abstract class CommandBase {
             default -> throw new RuntimeException("doo doo retard");
         };
     }
-    protected Player firstParamIsPlayer(Player p, ArrayList<String> args) {
-        Player pp = p;
-        if (args.size() > 0) {
-            pp = Bukkit.getPlayerExact(args.get(0));
-        }
-        return pp;
+    @SuppressWarnings("unchecked")
+    protected <T> T firstParamIsPlayer(Player p, ArrayList<String> args, boolean supportWildcard) {
+        if (args.isEmpty())
+            return supportWildcard ? (T) Collections.singleton(p) : (T) p;
+
+        if (!supportWildcard) return (T) Bukkit.getPlayerExact(args.get(0));
+        return args.get(0).equals("*") ?
+                (T) Bukkit.getOnlinePlayers() :
+                (T) Collections.singleton(Bukkit.getPlayerExact(args.get(0)));
     }
 
     private CommandInfo getInfo() {

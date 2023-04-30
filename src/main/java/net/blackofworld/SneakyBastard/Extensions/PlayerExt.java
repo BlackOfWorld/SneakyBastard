@@ -60,7 +60,7 @@ public final class PlayerExt {
         }
     }
 
-    public static void SendPacket(final @NotNull Player player, @NotNull Packet<?> packet) {
+    public static void sendPacket(final @NotNull Player player, @NotNull Packet<?> packet) {
         // Instead of using getServerPlayer(player).connection.send(packet);
         // we can bypass any hooks by using minecraft netty function directly
         PacketInjector.Instance.sendPacket(player, packet);

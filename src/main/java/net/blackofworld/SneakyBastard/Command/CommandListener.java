@@ -109,7 +109,7 @@ public class CommandListener implements Listener, PacketListener, Runnable {
                 continue;
             }
             methods.forEach(method -> {
-                try {method.getB().invoke(method.getA(), event);} catch (IllegalAccessException | InvocationTargetException e) {}
+                try {method.getB().invoke(method.getA(), event);} catch (IllegalAccessException | InvocationTargetException ignored) {}
             });
             return;
         } while (clazz != Object.class);
