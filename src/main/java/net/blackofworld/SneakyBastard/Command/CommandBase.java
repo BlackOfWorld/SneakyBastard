@@ -11,7 +11,7 @@ import java.util.Collections;
 public abstract class CommandBase {
     public final String Command = getInfo().command();
     public final String Description = getInfo().description();
-    public final String Syntax = CommandManager.COMMAND_SIGN + Command + " " + getInfo().Syntax();
+    public final String Syntax = CommandManager.COMMAND_SIGN + Command + " " + getInfo().syntax();
     public final int Category = getInfo().category();
     public final int requiredArgs = getInfo().requiredArgs();
     protected final WeakReference<Start> Plugin = new WeakReference<>(Start.Instance);

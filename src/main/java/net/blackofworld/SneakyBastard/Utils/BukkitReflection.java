@@ -100,7 +100,7 @@ public class BukkitReflection {
 
     public static void refreshPlayer(Player p) {
         //slow but works
-        if(p.isDead()) return;
+        if(!p.isOnline() || p.isDead()) return;
         try {
             var list = getMinecraftServer().getPlayerList();
             var sp = getServerPlayer(p);

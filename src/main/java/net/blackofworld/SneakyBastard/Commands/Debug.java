@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-@CommandInfo(command = "debug", description = "Debug shit", Syntax = "<blocks/packets>", category = CommandCategory.Miscellaneous, requiredArgs = 1)
+@CommandInfo(command = "debug", description = "Debug shit", syntax = "<blocks/packets>", category = CommandCategory.Miscellaneous, requiredArgs = 1)
 @ExtensionMethod({Player.class, PlayerExt.class})
 public class Debug extends CommandBase {
     static HashMap<String, String> packetTable = new HashMap<>();

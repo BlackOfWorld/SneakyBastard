@@ -23,7 +23,7 @@ import oshi.util.tuples.Triplet;
 import java.util.ArrayList;
 import java.util.Queue;
 
-@CommandInfo(command = "fakelag", description = "Fakes server lag.", Syntax = "", category = CommandCategory.Server)
+@CommandInfo(command = "fakelag", description = "Fakes server lag.", syntax = "", category = CommandCategory.Server)
 @ExtensionMethod({Player.class, PlayerExt.class})
 public class FakeLag extends CommandBase implements PacketInjector.PacketListener {
 

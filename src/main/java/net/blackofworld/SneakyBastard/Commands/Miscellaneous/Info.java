@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 
-@CommandInfo(command = "info", category = CommandCategory.Miscellaneous, description = "Tells you stuff about yourself or another player", Syntax = "[player]")
+@CommandInfo(command = "info", category = CommandCategory.Miscellaneous, description = "Tells you stuff about yourself or another player", syntax = "[player]")
 @ExtensionMethod({Player.class, PlayerExt.class})
 
 public class Info extends CommandBase {

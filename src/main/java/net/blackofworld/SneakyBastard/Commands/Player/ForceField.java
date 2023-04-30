@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@CommandInfo(command = "ff", description = "Bruh, how are you hitting me that far away?", Syntax = "<on/off/hostile/friendly/players/range>", category = CommandCategory.Player, requiredArgs = 1)
+@CommandInfo(command = "ff", description = "Bruh, how are you hitting me that far away?", syntax = "<on/off/hostile/friendly/players/range>", category = CommandCategory.Player, requiredArgs = 1)
 @ExtensionMethod({Player.class, PlayerExt.class})
 public class ForceField extends CommandBase {
     private final HashMap<UUID, forceField> players = new HashMap<>();

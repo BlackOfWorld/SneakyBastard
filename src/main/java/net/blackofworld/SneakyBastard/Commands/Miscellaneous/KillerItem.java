@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.Repairable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-@CommandInfo(command = "killeritem", category = CommandCategory.Miscellaneous, description = "Tells you stuff about yourself or another player", Syntax = "")
+@CommandInfo(command = "killeritem", category = CommandCategory.Miscellaneous, description = "Tells you stuff about yourself or another player", syntax = "")
 @ExtensionMethod({Player.class, PlayerExt.class})
 public class KillerItem extends CommandBase
 {

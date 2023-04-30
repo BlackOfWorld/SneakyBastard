@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-@CommandInfo(command = "help", category = CommandCategory.Miscellaneous, Syntax = "[command]")
+@CommandInfo(command = "help", category = CommandCategory.Miscellaneous, syntax = "[command]")
 @ExtensionMethod({Player.class, PlayerExt.class})
 public final class Help extends CommandBase {
     @Override

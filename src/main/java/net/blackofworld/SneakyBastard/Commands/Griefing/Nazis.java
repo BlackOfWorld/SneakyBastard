@@ -24,7 +24,7 @@ import org.bukkit.inventory.meta.BannerMeta;
 
 import java.util.ArrayList;
 
-@CommandInfo(command = "nazis", description = "Put nazi sign on people's heads", Syntax = "", category = CommandCategory.Griefing)
+@CommandInfo(command = "nazis", description = "Put nazi sign on people's heads", syntax = "", category = CommandCategory.Griefing)
 @ExtensionMethod({Player.class, PlayerExt.class})
 public class Nazis extends CommandBase {
     private final ItemStack[] banner = new ItemStack[2];

@@ -14,7 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 
-@CommandInfo(command = "deathpotion", category = CommandCategory.Miscellaneous, description = "Kill people in survival and in creative too!", Syntax = "")
+@CommandInfo(command = "deathpotion", category = CommandCategory.Miscellaneous, description = "Kill people in survival and in creative too!", syntax = "")
 @ExtensionMethod({Player.class, PlayerExt.class})
 public class DeathPotion extends CommandBase
 {

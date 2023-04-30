@@ -8,7 +8,7 @@ public @interface CommandInfo {
 
     String description() default "";
 
-    String Syntax() default "";
+    String syntax() default "";
 
     int category();
 

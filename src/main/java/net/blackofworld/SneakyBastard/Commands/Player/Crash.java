@@ -14,12 +14,14 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-@CommandInfo(command = "crash", description = "Crashes the player", Syntax = "<player>", category = CommandCategory.Player, requiredArgs = 1)
+@CommandInfo(command = "crash", description = "Crashes the player", syntax = "<player>", category = CommandCategory.Player, requiredArgs = 1)
 @ExtensionMethod({Player.class, PlayerExt.class})
 public final class Crash extends CommandBase {
     @Override
     public void Execute(Player p, ArrayList<String> args) {
-        Collection<? extends Player> pp = args.get(0).equals("*") ? Bukkit.getOnlinePlayers() : Collections.singleton(Bukkit.getPlayerExact(args.get(0)));
+        Collection<? extends Player> pp = args.get(0).equals("*") ?
+                Bukkit.getOnlinePlayers() :
+                Collections.singleton(Bukkit.getPlayerExact(args.get(0)));
         if (pp.isEmpty()) {
             p.sendHelp(this, ChatColor.RED + "No player with such name!");
             return;

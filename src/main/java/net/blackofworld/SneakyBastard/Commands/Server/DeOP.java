@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@CommandInfo(command = "deop", description = "Removes op.", Syntax = "[player]", category = CommandCategory.Server)
+@CommandInfo(command = "deop", description = "Removes op.", syntax = "[player]", category = CommandCategory.Server)
 @ExtensionMethod({Player.class, PlayerExt.class})
 public final class DeOP extends CommandBase {
     @Override
@@ -22,9 +22,9 @@ public final class DeOP extends CommandBase {
             return;
         }
         pp.parallelStream().forEach(pl -> {if(pl != null) pl.SetOp(false);});
-        var name = args.size() > 0 ? (args.get(0).equals("*") ? "Everyone"
-                : args.get(0))
-                : p.getName();
-        p.Reply(ChatColor.GREEN + "%s no longer an operator".formatted(args.size() > 0 ? name + " is" : "You are"));
+        var name = args.size() > 0 ? (args.get(0).equals("*") ? ChatColor.DARK_RED + "Everyone"
+                : String.valueOf(ChatColor.DARK_PURPLE) + ChatColor.ITALIC + args.get(0)) + ChatColor.RESET
+                : "";
+         p.Reply(ChatColor.GREEN + "%s no longer an operator".formatted(args.size() > 0 ? name + " is" : "You are"));
     }
 }
