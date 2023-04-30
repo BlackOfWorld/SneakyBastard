@@ -3,7 +3,6 @@ package net.blackofworld.SneakyBastard.Utils;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import lombok.SneakyThrows;
 import net.blackofworld.SneakyBastard.Start;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -12,11 +11,10 @@ import org.spigotmc.SpigotConfig;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 
-import static org.bukkit.Bukkit.getLogger;
 import static org.bukkit.Bukkit.getServer;
 
 
@@ -65,37 +63,37 @@ public class BungeeUtils {
         return true;
     }
 
-    @SneakyThrows()
-    public static Boolean isPlayerOnline(final String playerName) {
-        if(!proxyEnabled) return null;
-        ExecutorService service = Executors.newFixedThreadPool(1);
-
-        Future<Boolean> result = service.submit(() -> {
-            CompletableFuture<Boolean> playerOnline = new CompletableFuture<>();
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("PlayerList");
-            out.writeUTF("ALL");
-            getServer().sendPluginMessage(Start.Instance, "BungeeCord", out.toByteArray());
-            var queue = tasks.get().getOrDefault("PlayerList", new ArrayDeque<>());
-            queue.add((s, player, message) -> {
-                ByteArrayDataInput in = ByteStreams.newDataInput(message);
-                if (in.readUTF().equals("") && in.readUTF().equals("")) {
-                    return;
-                }
-                String pll = in.readUTF();
-                getLogger().log(Level.SEVERE, pll);
-                playerOnline.complete(Arrays.asList(pll.split(", ")).contains(playerName));
-            });
-            tasks.get().put("PlayerList", queue);
-            return playerOnline.join();
-        });
-        try {
-            return result.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+    public static boolean isPlayerOnline(final String playerName) {
+        if (!proxyEnabled) {
+            return false;
         }
-    }
 
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("PlayerList");
+        out.writeUTF("ALL");
+        getServer().sendPluginMessage(Start.Instance, "BungeeCord", out.toByteArray());
+        ArrayDeque<PluginMessageListener> queue = tasks.get().computeIfAbsent("PlayerList", k -> new ArrayDeque<>());
+
+        AtomicBoolean playerOnline = new AtomicBoolean(false);
+        CountDownLatch latch = new CountDownLatch(1);
+        queue.add((s, player, message) -> {
+            ByteArrayDataInput in = ByteStreams.newDataInput(message);
+            if (in.readUTF().equals("") && in.readUTF().equals("")) {
+                return;
+            }
+            in.readUTF(); // wtf?
+            String playerList = in.readUTF();
+
+            playerOnline.set((Arrays.asList(playerList.split(", ")).contains(playerName)));
+            latch.countDown();
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException ignored) {
+        }
+        return playerOnline.get();
+    }
 
     private static boolean isProxyEnabled() {
         // Start.Instance.getConfig()

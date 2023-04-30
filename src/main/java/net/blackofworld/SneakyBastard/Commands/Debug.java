@@ -6,8 +6,10 @@ import net.blackofworld.SneakyBastard.Command.CommandBase;
 import net.blackofworld.SneakyBastard.Command.CommandCategory;
 import net.blackofworld.SneakyBastard.Command.CommandInfo;
 import net.blackofworld.SneakyBastard.Extensions.PlayerExt;
+import net.blackofworld.SneakyBastard.Utils.BungeeUtils;
 import net.minecraft.network.protocol.game.*;
 import org.apache.commons.io.FileUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,11 +23,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-@CommandInfo(command = "debug", description = "Debug shit", syntax = "<blocks/packets>", category = CommandCategory.Miscellaneous, requiredArgs = 1)
+import static net.blackofworld.SneakyBastard.Utils.BungeeUtils.isPlayerOnline;
+
+@CommandInfo(command = "debug", description = "Debug shit", syntax = "<blocks/packets/bungee>", category = CommandCategory.Miscellaneous, requiredArgs = 1)
 @ExtensionMethod({Player.class, PlayerExt.class})
 public class Debug extends CommandBase {
     static HashMap<String, String> packetTable = new HashMap<>();
+
     static {
         try {
             FileUtils.forceMkdir(new File("SneakyBastard/"));
@@ -33,76 +40,6 @@ public class Debug extends CommandBase {
             throw new RuntimeException(e);
         }
     }
-    private Location first;
-    @Override
-    public void Execute(Player p, ArrayList<String> args) {
-
-        switch (args.get(0)) {
-            case "blocks" -> p.Reply(doBlocks(p, false) ? "Success!" : "Error!");
-            case "blocks2" -> p.Reply(doBlocks(p, true) ? "Success!" : "Error!");
-            case "packets" -> doPackets(p,args);
-            default -> p.sendHelp(this);
-        }
-    }
-    public void doPackets(Player p, ArrayList<String> args) {
-        if(args.size() <= 1)
-        {p.Reply("Packets require an argument! (Packet name, duh)"); return;}
-        String result = packetTable.getOrDefault(args.get(1), null);
-        if (result == null) {
-            p.Reply("Packet not found! :c", "Is your packet name properly capitalized?");
-        } else {
-            p.Reply("Packet name: "+ result);
-        }
-    }
-    @SneakyThrows
-    public boolean doBlocks(Player p, boolean ignoreAir) {
-        Location pl = p.getLocation();
-        if(first == null) {
-            first = pl;
-            p.sendMessage("First pos set!");
-            return true;
-        }
-
-        int topBlockX = (Math.max(first.getBlockX(), pl.getBlockX()));
-        int bottomBlockX = (Math.min(first.getBlockX(), pl.getBlockX()));
-
-        int topBlockY = (Math.max(first.getBlockY(), pl.getBlockY()));
-        int bottomBlockY = (Math.min(first.getBlockY(), pl.getBlockY()));
-
-        int topBlockZ = (Math.max(first.getBlockZ(), pl.getBlockZ()));
-        int bottomBlockZ = (Math.min(first.getBlockZ(), pl.getBlockZ()));
-
-        BufferedWriter log = createLogFile("Blocks");
-
-        for(int x = bottomBlockX; x <= topBlockX; x++)
-        {
-            for(int z = bottomBlockZ; z <= topBlockZ; z++)
-            {
-                for(int y = bottomBlockY; y <= topBlockY; y++)
-                {
-                    int diffBlockX = (topBlockX - x);
-                    int diffBlockY = (topBlockY - y);
-                    int diffBlockZ = (topBlockZ - z);
-
-                    Block block = pl.getWorld().getBlockAt(x, y, z);
-                    if(ignoreAir && block.getType() == Material.AIR) continue;
-                    log.append(String.format("p.getWorld().getBlockAt(x + %d, y + %d, z + %d).setType(Material.%s);\n", diffBlockX, diffBlockY, diffBlockZ, block.getType()));
-                }
-            }
-        }
-        log.close();
-        p.Reply("Wrote to SneakyBastard folder!");
-        first = null;
-        return true;
-    }
-
-    private BufferedWriter createLogFile(String Action) throws IOException {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH-mm");
-        String time = sdf.format(new Date());
-        return new BufferedWriter(new FileWriter(new File(String.format("SneakyBastard/Debug-%s-%s.txt", Action, time)).getAbsolutePath(), false));
-    }
-
-
 
     static {
         packetTable.put(ClientboundInitializeBorderPacket.class.getSimpleName(), "ClientboundInitializeBorderPacket");
@@ -312,5 +249,106 @@ public class Debug extends CommandBase {
         packetTable.put(ClientboundCustomPayloadPacket.class.getSimpleName(), "ClientboundCustomPayloadPacket");
         packetTable.put(ServerboundCustomPayloadPacket.class.getSimpleName(), "ServerboundCustomPayloadPacket");
         packetTable.put(ClientboundSelectAdvancementsTabPacket.class.getSimpleName(), "ClientboundSelectAdvancementsTabPacket");
+    }
+
+    private Location first;
+
+    @Override
+    public void Execute(Player p, ArrayList<String> args) {
+        String cmd = args.remove(0);
+        switch (cmd) {
+            case "blocks" -> p.Reply(doBlocks(p, false) ? "Success!" : "Error!");
+            case "blocks2" -> p.Reply(doBlocks(p, true) ? "Success!" : "Error!");
+            case "packets" -> doPackets(p, args);
+            case "bungee" -> doBungee(p, args);
+            default -> p.sendHelp(this);
+        }
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    public void doBungee(Player p, ArrayList<String> args) {
+        if (!BungeeUtils.proxyEnabled) {
+            p.Reply(ChatColor.DARK_RED + "Bungee not detected!");
+            return;
+        }
+        p.Reply(ChatColor.GRAY + "This may take a while...");
+        new Thread(() -> {
+            if (args.size() <= 1) {
+                p.Reply(ChatColor.GREEN + "Usage: <online/kick/send> <player>", "Send requires server name", "Kick can have a reason");
+                return;
+            }
+            switch (args.get(0)) {
+                case "online" -> p.Reply("%s is %s!".formatted(ChatColor.DARK_AQUA + args.get(1) + ChatColor.RED, isPlayerOnline(args.get(1)) ? "Online" : "Offline"));
+                case "kick" -> {
+                    if (!isPlayerOnline(args.get(1))) {
+                        p.Reply(ChatColor.DARK_RED + "Failed to kick! Player not online.");
+                    } else {
+                        String reason = args.size() >= 3 ? IntStream.range(2, args.size() - 1).mapToObj(args::get).collect(Collectors.joining()) : "You logged in from another location.";
+                        if (BungeeUtils.kickPlayer(args.get(1), reason))
+                            p.Reply(ChatColor.DARK_GREEN + "Player kicked!");
+                        else
+                            p.Reply(ChatColor.DARK_RED + "Failed to kick! Failed to send request.");
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void doPackets(Player p, ArrayList<String> args) {
+        if (args.size() <= 1) {
+            p.Reply("Packets require an argument! (Packet name, duh)");
+            return;
+        }
+        String result = packetTable.getOrDefault(args.get(0), null);
+        if (result == null) {
+            p.Reply("Packet not found! :c", "Is your packet name properly capitalized?");
+        } else {
+            p.Reply("Packet name: " + result);
+        }
+    }
+
+    @SneakyThrows
+    public boolean doBlocks(Player p, boolean ignoreAir) {
+        Location pl = p.getLocation();
+        if (first == null) {
+            first = pl;
+            p.sendMessage("First pos set!");
+            return true;
+        }
+
+        int topBlockX = (Math.max(first.getBlockX(), pl.getBlockX()));
+        int bottomBlockX = (Math.min(first.getBlockX(), pl.getBlockX()));
+
+        int topBlockY = (Math.max(first.getBlockY(), pl.getBlockY()));
+        int bottomBlockY = (Math.min(first.getBlockY(), pl.getBlockY()));
+
+        int topBlockZ = (Math.max(first.getBlockZ(), pl.getBlockZ()));
+        int bottomBlockZ = (Math.min(first.getBlockZ(), pl.getBlockZ()));
+
+        BufferedWriter log = createLogFile("Blocks");
+
+        for (int x = bottomBlockX; x <= topBlockX; x++) {
+            for (int z = bottomBlockZ; z <= topBlockZ; z++) {
+                for (int y = bottomBlockY; y <= topBlockY; y++) {
+                    int diffBlockX = (topBlockX - x);
+                    int diffBlockY = (topBlockY - y);
+                    int diffBlockZ = (topBlockZ - z);
+
+                    Block block = pl.getWorld().getBlockAt(x, y, z);
+                    if (ignoreAir && block.getType() == Material.AIR) continue;
+                    log.append(String.format("p.getWorld().getBlockAt(x + %d, y + %d, z + %d).setType(Material.%s);\n", diffBlockX, diffBlockY, diffBlockZ, block.getType()));
+                }
+            }
+        }
+        log.close();
+        p.Reply("Wrote to SneakyBastard folder!");
+        first = null;
+        return true;
+    }
+
+    private BufferedWriter createLogFile(String Action) throws IOException {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH-mm");
+        String time = sdf.format(new Date());
+        return new BufferedWriter(new FileWriter(new File(String.format("SneakyBastard/Debug-%s-%s.txt", Action, time)).getAbsolutePath(), false));
     }
 }
