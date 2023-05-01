@@ -282,7 +282,7 @@ public class Debug extends CommandBase {
                     if (!isPlayerOnline(args.get(1))) {
                         p.Reply(ChatColor.DARK_RED + "Failed to kick! Player not online.");
                     } else {
-                        String reason = args.size() >= 3 ? IntStream.range(2, args.size() - 1).mapToObj(args::get).collect(Collectors.joining()) : "You logged in from another location.";
+                        String reason = args.size() >= 3 ? IntStream.range(2, args.size()).mapToObj(args::get).collect(Collectors.joining()).replaceAll("&", "§") : "You logged in from another location.";
                         if (BungeeUtils.kickPlayer(args.get(1), reason))
                             p.Reply(ChatColor.DARK_GREEN + "Player kicked!");
                         else
